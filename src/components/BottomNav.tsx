@@ -1,5 +1,5 @@
 
-import { Home, PlusCircle, BarChart2} from "lucide-react";
+import { Home, PlusCircle, Settings} from "lucide-react";
 import { useLocation } from "react-router-dom";
 
 export const BottomNav = () => {
@@ -10,25 +10,25 @@ export const BottomNav = () => {
     <nav className="fixed bottom-0 w-full bg-white border-t border-t-gray-200 flex justify-around py-2 z-50">
       <a
         href="/"
-        className={`flex flex-col items-center ${pathname === "/" ? "text-blue-600" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/" ? "text-blue-600" : "text-gray-600"}`}
       >
         <Home />
         <span className="text-xs">Inicio</span>
       </a>
       <a
         href="/registrar"
-        className={`flex flex-col items-center ${pathname === "/registrar" ? "text-blue-600" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/registrar" ? "text-blue-600" : "text-gray-600"}`}
       >
         <PlusCircle />
         <span className="text-xs">Registrar</span>
       </a>
-      {/* <a
-        href="/resumen"
-        className={`flex flex-col items-center ${pathname === "/resumen" ? "text-blue-600" : "text-gray-600"}`}
+      <a
+        href="/configuracion"
+        className={`flex flex-col items-center w-10 ${pathname === "/configuracion" ? "text-blue-600" : "text-gray-600"}`}
       >
-        <BarChart2 />
-        <span className="text-xs">Resumen</span>
-      </a> */}
+        <Settings />
+        <span className="text-xs">Configuración</span>
+      </a>
     </nav>
   );
 };

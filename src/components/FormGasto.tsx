@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { CATEGORIAS_PREDEFINIDAS } from "../types/catalogs/CategoriaCatalog";
-import { addGasto } from "../db/GastosDB";
+import type { CategoriaType } from "../types/CategoriaType";
+import { useGastos } from "../hooks/UseGastos";
 
 interface Props {
   onClose: () => void;
+  categorias: CategoriaType[];
 }
 
-export const FormGasto = ({ onClose }: Props) => {
+export const FormGasto = ({ onClose, categorias }: Props) => {
   const [cantidad, setCantidad] = useState("");
   const [categoria, setCategoria] = useState("");
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
@@ -15,6 +16,8 @@ export const FormGasto = ({ onClose }: Props) => {
     categoria: false,
     fecha: false,
   });
+
+  const { crear } = useGastos();
 
   const validar = (): boolean => {
     const nuevosErrores = {
@@ -29,7 +32,7 @@ export const FormGasto = ({ onClose }: Props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validar()) {
-      addGasto({
+      crear({
         cantidad: parseFloat(cantidad),
         categoria,
         fecha,
@@ -61,8 +64,8 @@ export const FormGasto = ({ onClose }: Props) => {
           className={`w-full border rounded-lg p-3 ${errores.categoria ? "border-red-500" : ""}`}
         >
           <option value="">Selecciona categoría</option>
-          {CATEGORIAS_PREDEFINIDAS.map((item, index) => (
-            <option value={item.id} key={index + item.id}>
+          {categorias.map((item, index) => (
+            <option value={item.id} key={index + (item.id?.toString() || "")}>
               {item.nombre}
             </option>
           ))}

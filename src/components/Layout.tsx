@@ -37,7 +37,7 @@ const Layout = () => {
         <SidebarMenu menuIsOpen={isSidebarOpen} />
 
         {/* Main page content */}
-        <main className="p-4">
+        <main className="p-15">
         <Outlet />
         </main>
 

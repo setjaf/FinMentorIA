@@ -1,0 +1,25 @@
+
+// Colores disponibles de Tailwind (4.0) – puedes expandir esta lista según necesites
+export const coloresTailwind: { name: string; value: string, className: string }[] = [
+    { name: 'Slate', value: 'slate', className: 'bg-slate-500' },
+    { name: 'Gray', value: 'gray', className: 'bg-gray-500' },
+    { name: 'Zinc', value: 'zinc', className: 'bg-zinc-500' },
+    { name: 'Neutral', value: 'neutral', className: 'bg-neutral-500' },
+    { name: 'Stone', value: 'stone', className: 'bg-stone-500' },
+    { name: 'Red', value: 'red', className: 'bg-red-500' },
+    { name: 'Orange', value: 'orange', className: 'bg-orange-500' },
+    { name: 'Amber', value: 'amber', className: 'bg-amber-500' },
+    { name: 'Yellow', value: 'yellow', className: 'bg-yellow-500' },
+    { name: 'Lime', value: 'lime', className: 'bg-lime-500' },
+    { name: 'Green', value: 'green', className: 'bg-green-500' },
+    { name: 'Emerald', value: 'emerald', className: 'bg-emerald-500' },
+    { name: 'Teal', value: 'teal', className: 'bg-teal-500' },
+    { name: 'Cyan', value: 'cyan', className: 'bg-cyan-500' },
+    { name: 'Blue', value: 'blue', className: 'bg-blue-500' },
+    { name: 'Indigo', value: 'indigo', className: 'bg-indigo-500' },
+    { name: 'Violet', value: 'violet', className: 'bg-violet-500' },
+    { name: 'Purple', value: 'purple', className: 'bg-purple-500' },
+    { name: 'Fuchsia', value: 'fuchsia', className: 'bg-fuchsia-500' },
+    { name: 'Pink', value: 'pink', className: 'bg-pink-500' },
+    { name: 'Rose', value: 'rose', className: 'bg-rose-500' },
+];

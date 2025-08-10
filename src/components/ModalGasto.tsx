@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { FormGasto } from "./FormGasto";
 import { BackgroundMenu } from "./BackgroundMenu";
+import { useCategorias } from "../hooks/UseCategorias";
 
 
 
@@ -14,6 +15,8 @@ export const ModalGasto = ({ isOpen, onClose}: Props) => {
   // Controla la visibilidad del modal
   // y permite cerrar con la tecla Escape
   const [isVisible, setIsVisible] = useState(isOpen);
+
+  const { categorias } = useCategorias();
 
   useEffect(() => {
     setIsVisible(isOpen);
@@ -50,7 +53,7 @@ export const ModalGasto = ({ isOpen, onClose}: Props) => {
               <X />
             </button>
           </div>
-          <FormGasto onClose={onClose}/>
+          <FormGasto onClose={onClose} categorias={categorias}/>
         </div>
         <BackgroundMenu isMenuOpen={true} onMenuClick={onClose} />
       </div>

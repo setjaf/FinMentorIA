@@ -16,7 +16,7 @@ export const TopHeader = ({ onMenuClick}: Props) => {
   }, [location]);
 
   return (
-  <header className="flex items-center justify-between px-4 py-3 bg-white relative z-50">
+  <header className="fixed w-svw top-0 flex items-center justify-between px-4 py-3 bg-white z-50">
     <button onClick={onMenuClick} className="text-2xl">
       <Menu />
     </button>

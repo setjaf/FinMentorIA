@@ -1,8 +1,9 @@
 // Devuelve una lista de años únicos presentes en gastosAgrupados
 
-import { useEffect, useState } from 'react';
-import { getAniosMesesDisponibles, getGastosAgrupadosPorCategoria } from '../../db/GastosDB';
+import { use, useEffect, useState } from 'react';
 import type { AgrupadoGastoType, GastoType } from '../../types/GastoType';
+import type { CategoriaType } from '../../types/CategoriaType';
+import { useGastos } from '../../hooks/UseGastos';
 
 const meses = [
   { label: 'Enero', value: '01' },
@@ -22,22 +23,30 @@ const meses = [
 const mesActual = (new Date().getMonth() + 1).toString().padStart(2, '0');
 const anioActual = new Date().getFullYear().toString();
 
-export default function Resumen() {
+type ResumenProps = {
+  categorias: CategoriaType[];
+};
+
+export default function Resumen({ categorias }: ResumenProps) {
   const [anio, setAnio] = useState(anioActual);
   const [mes, setMes] = useState(mesActual);
   const [gastosAgrupados, setGastosAgrupados] = useState<AgrupadoGastoType>();
   const [acumulado, setAcumulado] = useState(0);
-  const [aniosMesesDisponibles, setAniosMesesDisponibles] = useState<{[anio: string] : Set<string>}>({anioActual: new Set([mesActual])});
+  const [aniosMesesDisponibles, setAniosMesesDisponibles] = useState<{[anio: string] : Set<string>}>(({}));
+
+  const { cargar, error, estado, gastos, agruparPorCategoriaDelMes, mesesDisponibles, totalDelMes } = useGastos({
+    listenGlobalEvents: true,
+  });
 
   const fetchGastos = async () => {
     // Aquí podrías cargar los gastos desde una base de datos o API
     // Por ahora usamos un mock
-    setGastosAgrupados(await getGastosAgrupadosPorCategoria(`${anio}-${mes}`));    
+    setGastosAgrupados(await agruparPorCategoriaDelMes(`${anio}-${mes}`));    
     
   }
 
   const fetchAniosMesesDisponibles = async () => {
-    const disponibles = await getAniosMesesDisponibles();
+    const disponibles = await mesesDisponibles();
     disponibles[anioActual] = disponibles[anioActual] || new Set();
     disponibles[anioActual].add(mesActual);    
     setAniosMesesDisponibles(disponibles);
@@ -45,18 +54,19 @@ export default function Resumen() {
   }
 
   useEffect(() => {
+    cargar();
+  }, [cargar]);
+
+  useEffect(() => {
+    console.log(error);
+  }, [error]);
+
+  useEffect(() => {
+    console.log(gastos);
+    
+    fetchGastos();
     fetchAniosMesesDisponibles();
-    const handler = () => {
-      fetchAniosMesesDisponibles();
-      fetchGastos();
-    };
-
-    window.addEventListener('gastoAdded', handler);
-
-    return () => {
-      window.removeEventListener('gastoAdded', handler);
-    };
-  }, []);
+  }, [gastos]);
   
   useEffect(() => {
     // Aquí podrías cargar los gastos desde una base de datos o API
@@ -74,7 +84,7 @@ export default function Resumen() {
   }, [gastosAgrupados]);
   
   const calcularAcumulado = () => {
-    setAcumulado(Object.values(gastosAgrupados ?? {}).flat().reduce((sum, gasto: GastoType) => sum + gasto.cantidad, 0));
+    setAcumulado(totalDelMes(`${anio}-${mes}`));
   }  
 
   return (
@@ -126,15 +136,19 @@ export default function Resumen() {
 
       <div className="space-y-3">
         {Object.entries(gastosAgrupados ?? {}).map(([categoria, lista]) => {
+          console.log(categorias);
+          
           const total = lista.reduce((sum, g) => sum + g.cantidad, 0);
+          const nombreCategoria = categorias.find(c => c.id == categoria)?.nombre || categoria;
+          const colorCategoria = categorias.find(c => c.id == categoria)?.color || 'white'; // Default color if not found
           return (
             <details
               key={categoria}
-              className="border rounded-xl bg-white shadow"
+              className={`rounded-xl shadow bg-${colorCategoria}-500`}
             >
               <summary className="px-4 py-3 flex justify-between items-center">
-                <span className="font-medium text-gray-900">{categoria}</span>
-                <span className="text-blue-800 font-semibold">${total.toFixed(2)}</span>
+                <span className="font-light text-white">{nombreCategoria}</span>
+                <span className="text-white font-semibold">${total.toFixed(2)}</span>
               </summary>
               <ul className="px-4 pb-3 text-sm text-gray-600 mt-2 space-y-1">
                 {lista.map((g, i) => (
