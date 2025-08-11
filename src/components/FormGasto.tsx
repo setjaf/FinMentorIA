@@ -1,23 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { CategoriaType } from "../types/CategoriaType";
 import { useGastos } from "../hooks/UseGastos";
+import { useNavigate } from "react-router-dom";
+import { localNow } from "../utils/TimeUtil";
 
 interface Props {
   onClose: () => void;
   categorias: CategoriaType[];
+  gastoId?: string | null; // Opcional para editar un gasto existente
 }
 
-export const FormGasto = ({ onClose, categorias }: Props) => {
+
+
+export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
   const [cantidad, setCantidad] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
+  const [fecha, setFecha] = useState(localNow().toISOString().split("T")[0]);
+  const [descripcion, setDescripcion] = useState("");
   const [errores, setErrores] = useState({
     cantidad: false,
     categoria: false,
     fecha: false,
   });
+  const navigate = useNavigate();
 
-  const { crear } = useGastos();
+  const { crear, actualizar, gastos } = useGastos();
+
+  // Cargar datos del gasto si gastoId está presente
+  useEffect(() => {
+    const cargarGasto = async () => {
+      if (gastoId) {
+        const gasto = gastos.find((g) => g.id?.toString() == gastoId);
+        if (gasto) {
+          setCantidad(gasto.cantidad.toString());
+          setCategoria(gasto.categoria);
+          setFecha(gasto.fecha);
+          setDescripcion(gasto.descripcion || "");
+        }
+      }
+    };
+    cargarGasto();
+  }, [gastoId, gastos]);
 
   const validar = (): boolean => {
     const nuevosErrores = {
@@ -29,18 +52,32 @@ export const FormGasto = ({ onClose, categorias }: Props) => {
     return !Object.values(nuevosErrores).some(Boolean);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validar()) {
-      crear({
-        cantidad: parseFloat(cantidad),
-        categoria,
-        fecha,
-      });
+      if (gastoId) {
+        // Editar gasto existente
+        await actualizar(gastoId, {
+          cantidad: parseFloat(cantidad),
+          categoria,
+          fecha,
+          descripcion: descripcion.trim() || undefined,
+        });
+        navigate(`/`);
+      } else {
+        // Crear nuevo gasto
+        await crear({
+          cantidad: parseFloat(cantidad),
+          categoria,
+          fecha,
+          descripcion: descripcion.trim() || undefined,
+        });
+      }
       setCantidad("");
       setCategoria("");
-      setFecha("");
-      window.dispatchEvent(new Event("gastoAdded")); // Notifica que se ha agregado un gasto
+      setFecha(new Date().toISOString().split("T")[0]);
+      setDescripcion("");
+      window.dispatchEvent(new Event("gastoAdded")); // Notifica que se ha agregado o editado un gasto
       onClose();
     }
   };
@@ -80,6 +117,15 @@ export const FormGasto = ({ onClose, categorias }: Props) => {
           className={`w-full border rounded-lg p-3 ${errores.fecha ? "border-red-500" : ""}`}
         />
         {errores.fecha && <p className="text-red-500 text-sm mt-1">Fecha requerida</p>}
+      </div>
+      <div>
+        <input
+          type="text"
+          placeholder="Descripción (opcional)"
+          value={descripcion}
+          onChange={(e) => setDescripcion(e.target.value)}
+          className="w-full border rounded-lg p-3"
+        />
       </div>
       <button
         type="submit"

@@ -1,11 +1,15 @@
 {
-  "name": "recordapp",
+  "name": "finmentoria",
+  "homepage": "http://setjaf.github.io/FinMentorIA",
+  "description": "A personal finance management app built with React, Vite, and Tailwind CSS.",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist",
     "lint": "eslint .",
     "preview": "vite preview"
   },

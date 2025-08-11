@@ -1,5 +1,5 @@
 import type { CategoriaType } from '../types/CategoriaType';
-import { getDB } from './initializeDB';
+import { getDB } from './InitializeDB';
 
 
 /** =========================

@@ -1,6 +1,5 @@
-
 import type { AgrupadoGastoType, GastoType } from '../types/GastoType';
-import { getDB } from './initializeDB';
+import { getDB } from './InitializeDB';
 
 const STORE_NAME = 'gastos';
 
@@ -72,4 +71,15 @@ export const getAniosMesesDisponibles = async (): Promise<{ [anio: string]: Set<
     }
 
     return agrupado; // orden descendente
+};
+
+// Actualiza un gasto existente por ID
+export const updateGasto = async (id: number | string, data: Partial<GastoType>): Promise<void> => {
+    const db = await getDB();
+    // Obtener el gasto actual
+    const current: GastoType | undefined = await db.get(STORE_NAME, typeof id === "string" ? Number(id) : id);
+    if (!current) throw new Error("Gasto no encontrado");
+    // Actualizar solo los campos proporcionados
+    const updated = { ...current, ...data };
+    await db.put(STORE_NAME, updated);
 };

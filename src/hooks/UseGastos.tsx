@@ -5,6 +5,7 @@ import {
   addGasto,
   deleteGasto,
   clearGastos,
+  updateGasto,
 } from '../db/GastosDB';
 
 type Estado = 'idle' | 'loading' | 'success' | 'error';
@@ -76,7 +77,7 @@ export function useGastos(opts?: { listenGlobalEvents?: boolean }) {
   const eliminar = useCallback(
     async (id: number) => {
       safeSet(setError, null);
-      const snapshot = gastos;
+      const snapshot = {...gastos};
       // Optimismo: removemos localmente
       safeSet(setGastos, (prev: GastoType[]) => prev.filter((g) => g.id !== id));
       try {
@@ -86,6 +87,30 @@ export function useGastos(opts?: { listenGlobalEvents?: boolean }) {
         // Revertir
         safeSet(setGastos, snapshot);
         const msg = e?.message ?? 'Error al eliminar gasto';
+        safeSet(setError, msg);
+        throw new Error(msg);
+      }
+    },
+    [gastos, safeSet]
+  );
+
+  // Actualización con optimismo
+  const actualizar = useCallback(
+    async (id: number | string, data: Partial<GastoType>) => {
+      safeSet(setError, null);
+      const idNum = typeof id === "string" ? Number(id) : id;
+      const snapshot = {...gastos};
+      // Optimismo: actualizamos localmente
+      safeSet(setGastos, (prev: GastoType[]) =>
+        prev.map((g) => (g.id === idNum ? { ...g, ...data } : g))
+      );
+      try {
+        await updateGasto(idNum, data);
+        window.dispatchEvent(new CustomEvent('gastos:cambio'));
+      } catch (e: any) {
+        // Revertir optimismo
+        safeSet(setGastos, snapshot);
+        const msg = e?.message ?? 'Error al actualizar gasto';
         safeSet(setError, msg);
         throw new Error(msg);
       }
@@ -172,6 +197,7 @@ export function useGastos(opts?: { listenGlobalEvents?: boolean }) {
     crear,
     eliminar,
     limpiar,
+    actualizar,
 
     // selectores / utilidades
     mesesDisponibles,

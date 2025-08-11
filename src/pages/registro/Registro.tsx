@@ -1,11 +1,15 @@
 import { FormGasto } from "../../components/FormGasto";
 import type { CategoriaType } from "../../types/CategoriaType";
+import { useSearchParams } from "react-router-dom";
 
 type RegistroProps = {  
     categorias: CategoriaType[];
 };
 
 export default function Registro({ categorias }: RegistroProps) {
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id");
+
     return (
         <div className="flex flex-col h-screen">
             <div className="text-center">
@@ -14,7 +18,7 @@ export default function Registro({ categorias }: RegistroProps) {
                 </h1>
             </div>
             <main className="flex-1 overflow-y-auto p-4">
-                <FormGasto onClose={()=>{}} categorias={categorias} />
+                <FormGasto onClose={() => {}} categorias={categorias} gastoId={id} />
             </main>
         </div>
     );
