@@ -23,7 +23,7 @@ export default defineConfig({
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#0f172a',
-        icons: [/*...*/]
+        icons: []
       }
     })
   ],
