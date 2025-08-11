@@ -19,7 +19,7 @@ export default defineConfig({
       manifest: {
         name: 'App de Gastos',
         short_name: 'Gastos',
-        start_url: '/',
+        start_url: '/FinMentorIA/',
         display: 'standalone',
         background_color: '#ffffff',
         theme_color: '#0f172a',
