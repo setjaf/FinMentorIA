@@ -1,6 +1,6 @@
 {
   "name": "finmentoria",
-  "homepage": "http://setjaf.github.io/",
+  "homepage": "http://setjaf.github.io/FinMentorIA",
   "description": "A personal finance management app built with React, Vite, and Tailwind CSS.",
   "private": true,
   "version": "0.0.1",
