@@ -34,7 +34,7 @@ const Layout = () => {
         {/* Header */}
         <TopHeader onMenuClick={handleMenuClick}/>
 
-        <SidebarMenu menuIsOpen={isSidebarOpen} />
+        <SidebarMenu menuIsOpen={isSidebarOpen} onMenuClose={handleCloseMenuClick} />
 
         {/* Main page content */}
         <main className="p-15">
