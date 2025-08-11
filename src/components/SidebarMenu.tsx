@@ -20,7 +20,6 @@ export const SidebarMenu = ({menuIsOpen, onMenuClose}:Props) => {
             <button className="block text-gray-800 w-full text-left" onClick={() => handleMenuClick("/registrar")}>Nuevo gasto</button>
             <button className="block text-gray-800 w-full text-left" onClick={() => handleMenuClick("/configuracion")}>Configuración</button>
             <hr />
-            <button className="block text-red-600 font-medium w-full text-left" onClick={() => {/* lógica de cerrar sesión */}}>Cerrar sesión</button>
         </aside>
     );
 };
