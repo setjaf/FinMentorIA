@@ -132,11 +132,11 @@ export default function Resumen({ categorias }: ResumenProps) {
           return (
             <details
               key={categoria}
-              className={`rounded-xl shadow bg-${colorCategoria}-500`}
+              className={`rounded-lg shadow bg-white border-2 border-gray-300 border-l-10 border-l-${colorCategoria}-500`}
             >
               <summary className="px-4 py-3 flex justify-between items-center">
-                <span className="font-medium text-white">{nombreCategoria}</span>
-                <span className="text-white font-semibold">${total.toFixed(2)}</span>
+                <span className="font-medium text-gray-600">{nombreCategoria}</span>
+                <span className="text-gray-600 font-semibold">${total.toFixed(2)}</span>
               </summary>
               <ul className="px-4 pb-3 text-sm text-gray-600 mt-2 space-y-1">
                 {lista.map((g, i) => (

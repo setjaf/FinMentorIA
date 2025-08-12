@@ -16,7 +16,7 @@ export default function InformacionGasto ({ gasto }: { gasto: GastoType }) {
   return (
     <li
       onClick={() => setShow((v) => !v)}
-      className="flex justify-between items-center relative align-middle text-white focus:text-blue-900"
+      className="flex justify-between items-center relative align-middle text-gray-600 focus:text-blue-900"
     >
       <span className="flex align-middle">
         {
