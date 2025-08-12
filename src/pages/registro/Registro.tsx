@@ -13,7 +13,7 @@ export default function Registro({ categorias }: RegistroProps) {
     return (
         <div className="flex flex-col h-screen">
             <div className="text-center">
-                <h1 className="text-2xl font-semibold text-gray-900">
+                <h1 className="text-2xl font-semibold text-gray-900 pb-4">
                     Registrar Gasto
                 </h1>
             </div>

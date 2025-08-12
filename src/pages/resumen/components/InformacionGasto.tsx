@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { Info, Pencil } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import type { GastoType } from '../../../types/GastoType';
 
-export default function InformacionGasto ({ gasto }: { gasto: GastoType }) {
+// Envolvemos el componente con React.memo.
+// Esto evita que se vuelva a renderizar si sus props (en este caso, `gasto`)
+// no han cambiado, lo cual es una optimización clave para componentes en una lista.
+const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
@@ -49,4 +52,6 @@ export default function InformacionGasto ({ gasto }: { gasto: GastoType }) {
       </span>
     </li>
   );
-};
+});
+
+export default InformacionGasto;

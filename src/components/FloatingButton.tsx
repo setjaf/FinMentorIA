@@ -7,7 +7,7 @@ type Props = {
 export const FloatingButton = ({ onClick }: Props) => (
   <button
     onClick={onClick}
-    className="fixed bottom-20 right-6 bg-blue-700 text-white text-2xl w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:bg-blue-800 z-30"
+    className="fixed bottom-20 right-6 bg-blue-900 text-white text-2xl w-16 h-16 rounded-full flex items-center justify-center shadow-lg z-30"
   >
     <Plus />
   </button>

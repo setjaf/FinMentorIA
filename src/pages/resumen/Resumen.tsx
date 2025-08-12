@@ -1,6 +1,6 @@
 // Devuelve una lista de años únicos presentes en gastosAgrupados
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { AgrupadoGastoType } from '../../types/GastoType';
 import type { CategoriaType } from '../../types/CategoriaType';
 import { useGastos } from '../../hooks/UseGastos';
@@ -18,65 +18,50 @@ type ResumenProps = {
 export default function Resumen({ categorias }: ResumenProps) {
   const [anio, setAnio] = useState(anioActual);
   const [mes, setMes] = useState(mesActual);
-  const [gastosAgrupados, setGastosAgrupados] = useState<AgrupadoGastoType>();
-  const [acumulado, setAcumulado] = useState(0);
-  const [aniosMesesDisponibles, setAniosMesesDisponibles] = useState<{ [anio: string]: Set<string> }>(({}));
 
-  const { cargar, error, gastos, agruparPorCategoriaDelMes, mesesDisponibles, totalDelMes } = useGastos({
+  const { cargar, error, agruparPorCategoriaDelMes, mesesDisponibles, totalDelMes } = useGastos({
     listenGlobalEvents: true,
   });
 
-  const fetchGastos = async () => {
-    // Aquí podrías cargar los gastos desde una base de datos o API
-    // Por ahora usamos un mock
-    setGastosAgrupados(await agruparPorCategoriaDelMes(`${anio}-${mes}`));
-
-  }
-
-  const fetchAniosMesesDisponibles = async () => {
-    const disponibles = await mesesDisponibles();
+  // 1. Memoizamos los años y meses disponibles.
+  // Se recalculará solo si la función `mesesDisponibles` (que depende de `gastos`) cambia.
+  const aniosMesesDisponibles = useMemo(() => {
+    const disponibles = mesesDisponibles();
     disponibles[anioActual] = disponibles[anioActual] || new Set();
     disponibles[anioActual].add(mesActual);
-    setAniosMesesDisponibles(disponibles);
     return disponibles;
-  }
+  }, [mesesDisponibles]);
+
+  // 2. Memoizamos los gastos agrupados.
+  // Se recalculará solo si `agruparPorCategoriaDelMes`, `anio` o `mes` cambian.
+  const gastosAgrupados = useMemo<AgrupadoGastoType>(() => {
+    return agruparPorCategoriaDelMes(`${anio}-${mes}`);
+  }, [agruparPorCategoriaDelMes, anio, mes]);
+
+  // 3. Memoizamos el total acumulado del mes.
+  // Se recalculará solo si `totalDelMes`, `anio` o `mes` cambian.
+  const acumulado = useMemo(() => {
+    return totalDelMes(`${anio}-${mes}`);
+  }, [totalDelMes, anio, mes]);
 
   useEffect(() => {
     cargar();
   }, [cargar]);
 
   useEffect(() => {
-    console.log(error);
+    if (error) console.error(error);
   }, [error]);
 
   useEffect(() => {
-    console.log(gastos);
-
-    fetchGastos();
-    fetchAniosMesesDisponibles();
-  }, [gastos]);
-
-  useEffect(() => {
-    // Aquí podrías cargar los gastos desde una base de datos o API
-    // Por ahora usamos un mock
-    fetchGastos();
-    return () => { };
-  }, [mes]);
-
-  useEffect(() => {
-    setMes(aniosMesesDisponibles[anio]?.values().next().value || mesActual);
-  }, [anio]);
-
-  useEffect(() => {
-    calcularAcumulado();
-  }, [gastosAgrupados]);
-
-  const calcularAcumulado = () => {
-    setAcumulado(totalDelMes(`${anio}-${mes}`));
-  }
+    // 4. Efecto para ajustar el mes si el actual no es válido para el año seleccionado.
+    const mesesDelAnio = aniosMesesDisponibles[anio];
+    if (mesesDelAnio && !mesesDelAnio.has(mes)) {
+      setMes(mesesDelAnio.values().next().value || mesActual);
+    }
+  }, [anio, aniosMesesDisponibles, mes]);
 
   return (
-    <main className="p-4 pb-24 space-y-4">
+    <>
       <div className="text-center">
         <h1 className="text-2xl font-semibold text-gray-900">
           Resumen Mensual
@@ -124,8 +109,6 @@ export default function Resumen({ categorias }: ResumenProps) {
 
       <div className="space-y-3">
         {Object.entries(gastosAgrupados ?? {}).map(([categoria, lista]) => {
-          console.log(categorias);
-
           const total = lista.reduce((sum, g) => sum + g.cantidad, 0);
           const nombreCategoria = categorias.find(c => c.id == categoria)?.nombre || categoria;
           const colorCategoria = categorias.find(c => c.id == categoria)?.color || 'white'; // Default color if not found
@@ -147,7 +130,6 @@ export default function Resumen({ categorias }: ResumenProps) {
           );
         })}
       </div>
-    </main>
+    </>
   );
 }
-

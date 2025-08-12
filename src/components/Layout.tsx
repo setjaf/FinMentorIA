@@ -37,7 +37,7 @@ const Layout = () => {
         <SidebarMenu menuIsOpen={isSidebarOpen} onMenuClose={handleCloseMenuClick} />
 
         {/* Main page content */}
-        <main className="px-10 py-15">
+        <main className="px-10 py-15 space-y-4">
         <Outlet />
         </main>
 

@@ -23,7 +23,7 @@ export const TopHeader = ({ onMenuClick }: Props) => {
       </button>
       {!isInicio && (
         <button
-          className="text-blue-600 text-sm mx-5"
+          className="text-blue-900 text-sm px-4"
           onClick={() => navigate("/")}
         >
           ← Inicio

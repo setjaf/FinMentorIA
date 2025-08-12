@@ -90,7 +90,7 @@ export default function Configuracion() {
                         {!categoriaSeleccionada ? (
                             <button
                                 onClick={handleAgregar}
-                                className="flex-1 bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700"
+                                className="flex-1 bg-blue-900 text-white p-2 rounded-lg hover:bg-blue-700"
                                 type="button"
                             >
                                 Agregar categoría
@@ -100,7 +100,7 @@ export default function Configuracion() {
                                 <>
                                     <button
                                         onClick={handleGuardar}
-                                        className="flex-1 bg-green-600 text-white p-2 rounded-lg hover:bg-green-700"
+                                        className="flex-1 bg-green-900 text-white p-2 rounded-lg hover:bg-green-700"
                                         type="button"
                                     >
                                         Guardar
@@ -111,7 +111,7 @@ export default function Configuracion() {
                                             setNombre('');
                                             setColor(coloresTailwind[0].value);
                                         }}
-                                        className="flex-1 bg-gray-300 text-gray-800 p-2 rounded-lg hover:bg-gray-400"
+                                        className="flex-1 border-1 border-gray-300 bg-white text-red-800 p-2 rounded-lg hover:bg-gray-400"
                                         type="button"
                                     >
                                         Cancelar edición

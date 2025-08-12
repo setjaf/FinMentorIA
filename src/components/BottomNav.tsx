@@ -11,7 +11,7 @@ export const BottomNav = () => {
       <button
         type="button"
         onClick={() => navigate("/")}
-        className={`flex flex-col items-center w-10 ${pathname === "/" ? "text-blue-600" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/" ? "text-blue-900" : "text-gray-600"}`}
       >
         <Home />
         <span className="text-xs">Inicio</span>
@@ -19,7 +19,7 @@ export const BottomNav = () => {
       <button
         type="button"
         onClick={() => navigate("/registrar")}
-        className={`flex flex-col items-center w-10 ${pathname === "/registrar" ? "text-blue-600" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/registrar" ? "text-blue-900" : "text-gray-600"}`}
       >
         <PlusCircle />
         <span className="text-xs">Registrar</span>
@@ -27,7 +27,7 @@ export const BottomNav = () => {
       <button
         type="button"
         onClick={() => navigate("/configuracion")}
-        className={`flex flex-col items-center w-10 ${pathname === "/configuracion" ? "text-blue-600" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/configuracion" ? "text-blue-900" : "text-gray-600"}`}
       >
         <Settings />
         <span className="text-xs">Configuración</span>
