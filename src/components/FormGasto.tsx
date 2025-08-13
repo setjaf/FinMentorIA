@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import type { CategoriaType } from "../types/CategoriaType";
 import { useGastos } from "../hooks/UseGastos";
 import { useNavigate } from "react-router-dom";
@@ -51,44 +51,49 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
     return !Object.values(nuevosErrores).some(Boolean);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validar()) {
-      if (gastoId) {
-        // Editar gasto existente
-        await actualizar(gastoId, {
-          cantidad: parseFloat(cantidad),
-          categoria,
-          fecha,
-          descripcion: descripcion.trim() || undefined,
-        });
-        navigate(`/`);
-      } else {
-        // Crear nuevo gasto
-        await crear({
-          cantidad: parseFloat(cantidad),
-          categoria,
-          fecha,
-          descripcion: descripcion.trim() || undefined,
-        });
-      }
-      setCantidad("");
-      setCategoria("");
-      setFecha(new Date().toISOString().split("T")[0]);
-      setDescripcion("");
-      window.dispatchEvent(new Event("gastoAdded")); // Notifica que se ha agregado o editado un gasto
-      onClose();
-    }
-  };
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (validar()) {
+        const gastoData = {
+            cantidad: parseFloat(cantidad),
+            categoria,
+            fecha,
+            descripcion: descripcion.trim() || undefined,
+        };
 
-  const handleDelete = async () => {
+        try {
+            if (gastoId) {
+                await actualizar(gastoId, gastoData);
+                navigate(`/`);
+            } else {
+                await crear(gastoData);
+            }
+            setCantidad("");
+            setCategoria("");
+            setFecha(localNow().toISOString().split("T")[0]);
+            setDescripcion("");
+            window.dispatchEvent(new Event("gastoAdded"));
+            onClose();
+        } catch (error) {
+            console.error("Error al guardar el gasto:", error);
+            // Opcional: mostrar un mensaje de error al usuario
+        }
+      }
+  }, [gastoId, cantidad, categoria, fecha, descripcion, validar, actualizar, crear, navigate, onClose]);
+
+  const handleDelete = useCallback(async () => {
     if (gastoId) {
-      await eliminar(Number(gastoId));
-      setShowDeleteModal(false);
-      navigate(`/`);
-      onClose();
+      try {
+        await eliminar(Number(gastoId));
+        setShowDeleteModal(false);
+        navigate(`/`);
+        onClose();
+      } catch (error) {
+        console.error("Error al eliminar el gasto:", error);
+        // Opcional: mostrar un mensaje de error al usuario
+      }
     }
-  };
+  }, [gastoId, eliminar, navigate, onClose]);
 
   return (
     <>
@@ -139,7 +144,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
         <div className="flex gap-2">
           <button
             type="submit"
-            className="flex-1 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700"
+            className="flex-1 bg-blue-900 text-white p-3 rounded-lg"
           >
             {gastoId ? "Editar gasto" : "Guardar gasto"}
           </button>
