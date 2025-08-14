@@ -23,13 +23,13 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const navigate = useNavigate();
-  const { crear, actualizar, eliminar, gastos } = useGastos();
+  const { fetchGastoById, crear, actualizar, eliminarSoft } = useGastos();
 
   // Cargar datos del gasto si gastoId está presente
   useEffect(() => {
     const cargarGasto = async () => {
       if (gastoId) {
-        const gasto = gastos.find((g) => g.id?.toString() == gastoId);
+        const gasto = await fetchGastoById(gastoId);
         if (gasto) {
           setCantidad(gasto.cantidad.toString());
           setCategoria(gasto.categoria);
@@ -39,7 +39,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
       }
     };
     cargarGasto();
-  }, [gastoId, gastos]);
+  }, [gastoId, fetchGastoById]);
 
   const validar = (): boolean => {
     const nuevosErrores = {
@@ -84,7 +84,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
   const handleDelete = useCallback(async () => {
     if (gastoId) {
       try {
-        await eliminar(Number(gastoId));
+        await eliminarSoft(Number(gastoId));
         setShowDeleteModal(false);
         navigate(`/`);
         onClose();
@@ -93,7 +93,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
         // Opcional: mostrar un mensaje de error al usuario
       }
     }
-  }, [gastoId, eliminar, navigate, onClose]);
+  }, [gastoId, eliminarSoft, navigate, onClose]);
 
   return (
     <>
@@ -104,7 +104,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             placeholder="Cantidad"
             value={cantidad}
             onChange={(e) => setCantidad(e.target.value)}
-            className={`w-full border rounded-lg p-3 ${errores.cantidad ? "border-red-500" : ""}`}
+            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.cantidad ? "border-red-500" : ""}`}
           />
           {errores.cantidad && <p className="text-red-500 text-sm mt-1">Cantidad inválida</p>}
         </div>
@@ -112,7 +112,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
           <select
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
-            className={`w-full border rounded-lg p-3 ${errores.categoria ? "border-red-500" : ""}`}
+            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.categoria ? "border-red-500" : ""}`}
           >
             <option value="">Selecciona categoría</option>
             {categorias.map((item, index) => (
@@ -128,7 +128,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            className={`w-full border rounded-lg p-3 ${errores.fecha ? "border-red-500" : ""}`}
+            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.fecha ? "border-red-500" : ""}`}
           />
           {errores.fecha && <p className="text-red-500 text-sm mt-1">Fecha requerida</p>}
         </div>
@@ -138,7 +138,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             placeholder="Descripción (opcional)"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            className="w-full border rounded-lg p-3"
+            className="w-full border-2 border-gray-300 rounded-lg p-3"
           />
         </div>
         <div className="flex gap-2">

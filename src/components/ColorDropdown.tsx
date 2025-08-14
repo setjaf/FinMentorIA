@@ -15,7 +15,7 @@ export const ColorDropdown = ({ color, setColor }: Props) => {
             <button
                 type="button"
                 onClick={() => setShowColors(!showColors)}
-                className="w-full border rounded-lg p-2 flex justify-between items-center"
+                className="w-full border border-gray-300 rounded-lg p-2 flex justify-between items-center"
             >
                 <span className="flex items-center gap-2">
                     <span className={`w-4 h-4 bg-${color}-500 rounded`} />
@@ -25,7 +25,7 @@ export const ColorDropdown = ({ color, setColor }: Props) => {
             </button>
 
             {showColors && (
-                <ul className="absolute z-10 bg-white border rounded-lg w-full mt-1 max-h-48 overflow-y-auto shadow">
+                <ul className="absolute z-10 bg-white border border-gray-300 rounded-lg w-full mt-1 max-h-48 overflow-y-auto shadow">
                     {coloresTailwind.map(c => (
                         <li
                             key={c.value}

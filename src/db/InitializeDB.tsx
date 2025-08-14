@@ -6,7 +6,7 @@ interface AppDB extends DBSchema {
   gastos: {
     key: number;
     value: GastoType;
-    indexes: {};
+    indexes: { 'by-fecha': string, 'by-deletedAt': string};
   };
   categorias: {
     key: number;
@@ -16,26 +16,35 @@ interface AppDB extends DBSchema {
 }
 
 const DB_NAME = 'gastos-db';
-const VERSION = 3; // ⬅️ súbela cuando agregues/modifiques stores
+const VERSION = 5;
 let _db: IDBPDatabase<AppDB> | null = null;
 
 export async function getDB(): Promise<IDBPDatabase<AppDB>> {
   if (_db) return _db;
 
   _db = await openDB<AppDB>(DB_NAME, VERSION, {
-    upgrade(db, oldVersion) {
+    upgrade(db, oldVersion, newVersion ,tx) {
       // v1: crea 'gastos'
       if (oldVersion < 1) {
         db.createObjectStore('gastos', { keyPath: 'id', autoIncrement: true });
       }
       // v2: crea 'categorias'
       if (oldVersion < 2) {
-        const store = db.createObjectStore('categorias', { keyPath: 'id', autoIncrement: true });
-        store.createIndex('by-nombre', 'nombre', { unique: true });
+        const catStore = db.createObjectStore('categorias', { keyPath: 'id', autoIncrement: true });
+        catStore.createIndex('by-nombre', 'nombre', { unique: true });
       }
-      // v3: aquí podrías agregar otros índices o stores
-    },
-  });
+      // v4: Agrega índice por fecha a los gastos para consultas eficientes
+      if (oldVersion < 4) {
+        const gastoStore = tx.objectStore('gastos');
+        gastoStore.createIndex('by-fecha', 'fecha');
+      }
+      // v5: Agrega índices para borrado lógico y fechas de auditoría
+      if (oldVersion < 5) {
+        const gastoStore = tx.objectStore('gastos');
+        // Índice para filtrar eficientemente los gastos no borrados (deletedAt será undefined para los activos)
+        gastoStore.createIndex('by-deletedAt', 'deletedAt');
+    }
+  }});
 
   return _db;
 }

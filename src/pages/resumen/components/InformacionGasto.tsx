@@ -9,7 +9,7 @@ import type { GastoType } from '../../../types/GastoType';
 const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
-
+  
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     // Puedes pasar el id del gasto por query param o state
@@ -26,13 +26,15 @@ const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
           gasto.descripcion && (
             <button
               type="button"
-              className="mr-1 focus:text-blue-900 relative"
+              className="relative mr-1 focus:text-blue-900"
               tabIndex={0}
             >
               <Info size={20} />
               {show && (
-                <div className="absolute right-0 top-2 z-50 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-800 min-w-[80px] max-w-[180px]">
-                  <div>{gasto.descripcion}</div>
+                <div
+                  className={`absolute left-0 top-full mt-1 z-50 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-800 min-w-[80px] max-w-[180px]`}
+                >
+                  {gasto.descripcion}
                 </div>
               )}
             </button>

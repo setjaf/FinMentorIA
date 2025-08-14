@@ -6,26 +6,75 @@ const STORE_NAME = 'gastos';
 // Agrega un nuevo gasto
 export const addGasto = async (gasto: Omit<GastoType, 'id'>): Promise<IDBValidKey> => {
     const db = await getDB();
+    gasto.createdAt = new Date().toISOString();
     return await db.add(STORE_NAME, gasto);
 };
 
 // Obtiene todos los gastos
+// Nota: Esta función ahora solo devuelve gastos no borrados lógicamente.
 export const getGastos = async (): Promise<GastoType[]> => {
     const db = await getDB();
-    return await db.getAll(STORE_NAME);
+    const allGastos = await db.getAll(STORE_NAME);
+    return allGastos.filter(gasto => !gasto.deletedAt);
+};
+
+// Obtiene un gasto por su ID
+export const getGastoById = async (id: number | string): Promise<GastoType | undefined> => {
+    const db = await getDB();
+    return db.get(STORE_NAME, typeof id === 'string' ? Number(id) : id);
 };
 
 // Obtiene los gastos de un mes específico: "2025-08"
 export const getGastosPorMes = async (yyyyMm: string): Promise<GastoType[]> => {
-    const all = await getGastos();
-    if (!all) return [];
-    return all.filter((g) => g.fecha.startsWith(yyyyMm));
+    const db = await getDB();
+    const range = IDBKeyRange.bound(`${yyyyMm}-01`, `${yyyyMm}-31`);
+    const gastosDelMes = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
+    // Filtramos para excluir los gastos borrados lógicamente
+    const gastosActivos = gastosDelMes.filter(gasto => !gasto.deletedAt);
+    // Ordenamos por fecha descendente para mostrar los más recientes primero
+    return gastosActivos.sort((a, b) => b.fecha.localeCompare(a.fecha));
 };
 
 // Elimina un gasto por ID
 export const deleteGasto = async (id: number): Promise<void> => {
     const db = await getDB();
     await db.delete(STORE_NAME, id);
+};
+
+// Obtiene solo los gastos que han sido borrados lógicamente
+export const getDeletedGastos = async (): Promise<GastoType[]> => {
+    const db = await getDB();
+    // Usamos el índice 'by-deletedAt' para obtener eficientemente solo los registros
+    // que tienen un valor en el campo 'deletedAt'.
+    const range = IDBKeyRange.lowerBound('');
+    const deletedGastos = await db.getAllFromIndex(STORE_NAME, 'by-deletedAt', range);
+    // Ordenamos por fecha de borrado, mostrando los más recientes primero
+    return deletedGastos.sort((a, b) => (b.deletedAt || '').localeCompare(a.deletedAt || ''));
+};
+
+// Restaura un gasto que fue borrado lógicamente
+export const restoreGasto = async (id: number | string): Promise<void> => {
+    const db = await getDB();
+    const numericId = typeof id === 'string' ? Number(id) : id;
+
+    const current = await db.get(STORE_NAME, numericId);
+    if (!current) throw new Error(`Gasto con id ${id} no encontrado.`);
+    if (!current.deletedAt) return; // Ya está restaurado, no hacer nada.
+
+    const { deletedAt, ...restoredGasto } = current;
+    await db.put(STORE_NAME, { ...restoredGasto, updatedAt: new Date().toISOString() });
+};
+
+// Realiza un borrado lógico de un gasto marcándolo con una fecha de borrado
+export const softDeleteGasto = async (id: number | string): Promise<void> => {
+    const db = await getDB();
+    const numericId = typeof id === 'string' ? Number(id) : id;
+
+    const current = await db.get(STORE_NAME, numericId);
+    if (!current) throw new Error(`Gasto con id ${id} no encontrado.`);
+
+    const updatedGasto = { ...current, deletedAt: new Date().toISOString() };
+    await db.put(STORE_NAME, updatedGasto);
 };
 
 // Borra todos los gastos (precaución)
@@ -80,6 +129,6 @@ export const updateGasto = async (id: number | string, data: Partial<GastoType>)
     const current: GastoType | undefined = await db.get(STORE_NAME, typeof id === "string" ? Number(id) : id);
     if (!current) throw new Error("Gasto no encontrado");
     // Actualizar solo los campos proporcionados
-    const updated = { ...current, ...data };
+    const updated = { ...current, ...data, updatedAt: new Date().toISOString() };
     await db.put(STORE_NAME, updated);
 };
