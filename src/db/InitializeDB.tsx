@@ -24,6 +24,8 @@ export async function getDB(): Promise<IDBPDatabase<AppDB>> {
 
   _db = await openDB<AppDB>(DB_NAME, VERSION, {
     upgrade(db, oldVersion, newVersion ,tx) {
+      console.log(newVersion);
+      
       // v1: crea 'gastos'
       if (oldVersion < 1) {
         db.createObjectStore('gastos', { keyPath: 'id', autoIncrement: true });
