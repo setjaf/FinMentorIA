@@ -7,7 +7,7 @@ export const BottomNav = () => {
   const navigate = useNavigate();
 
   return (
-    <nav className="fixed bottom-0 w-full bg-white border-t border-t-gray-200 flex justify-around py-2 z-50">
+    <nav className="fixed bottom-0 w-full bg-white border-t border-t-gray-200 flex justify-around py-2 z-50 mb-4">
       <button
         type="button"
         onClick={() => navigate("/")}
