@@ -132,3 +132,25 @@ export const updateGasto = async (id: number | string, data: Partial<GastoType>)
     const updated = { ...current, ...data, updatedAt: new Date().toISOString() };
     await db.put(STORE_NAME, updated);
 };
+
+// Agrega masivamente gastos desde un array. No comprueba duplicados.
+const bulkAddGastos = async (gastos: Array<Omit<GastoType, 'id'>>): Promise<void> => {
+    const db = await getDB();
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const now = new Date().toISOString();
+
+    for (const gasto of gastos) {
+        const gastoToInsert = {
+            ...gasto,
+            createdAt: gasto.createdAt || now,
+            updatedAt: now, // Siempre establece la fecha de actualización
+        };
+        await tx.store.add(gastoToInsert as any);
+    }
+    await tx.done;
+};
+
+export async function importGastos(json: string) {
+  const parsed: GastoType[] = JSON.parse(json);
+  await bulkAddGastos(parsed.map(({ id, ...rest }) => rest));
+}

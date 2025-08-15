@@ -1,12 +1,11 @@
 import AdministrarCategorias from './components/AdministrarCategorias';
+import Exportar from './components/Exportar';
+import Importar from './components/Importar';
 import PapeleraGastos from './components/PapeleraGastos';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown} from 'lucide-react';
 
-
-export default function Configuracion() {     
+export default function Configuracion() {         
     
-
-
     return (
         <div className="p-4 pb-24 space-y-6 text-center">
             <h1 className="text-2xl font-semibold text-gray-900">
@@ -32,6 +31,22 @@ export default function Configuracion() {
                 <div className="p-4 border-t border-gray-200">
                     <PapeleraGastos />
                 </div>
+            </details>
+
+            <details className="group bg-white rounded-lg shadow-md overflow-hidden">
+                <summary className="flex justify-between items-center p-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
+                    <h2 className="text-lg font-semibold text-gray-800">Exportar Datos</h2>
+                    <ChevronDown className="transform transition-transform duration-300 group-open:rotate-180 text-gray-600" />
+                </summary>
+                <Exportar />
+            </details>
+
+            <details className="group bg-white rounded-lg shadow-md overflow-hidden">
+                <summary className="flex justify-between items-center p-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
+                    <h2 className="text-lg font-semibold text-gray-800">Importar Datos</h2>
+                    <ChevronDown className="transform transition-transform duration-300 group-open:rotate-180 text-gray-600" />
+                </summary>
+                <Importar />
             </details>
             
         </div>
