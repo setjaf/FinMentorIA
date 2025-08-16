@@ -24,6 +24,17 @@ export const getGastoById = async (id: number | string): Promise<GastoType | und
     return db.get(STORE_NAME, typeof id === 'string' ? Number(id) : id);
 };
 
+// Obtiene los gastos de un día específico: "2025-08-21"
+export const getGastosPorDia = async (yyyyMmDd: string): Promise<GastoType[]> => {
+    const db = await getDB();
+    const range = IDBKeyRange.only(yyyyMmDd);
+    const gastosDelDia = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
+    // Filtramos para excluir los gastos borrados lógicamente
+    const gastosActivos = gastosDelDia.filter(gasto => !gasto.deletedAt);
+    // Ordenamos por fecha de creación descendente para mostrar los más recientes primero
+    return gastosActivos.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+};
+
 // Obtiene los gastos de un mes específico: "2025-08"
 export const getGastosPorMes = async (yyyyMm: string): Promise<GastoType[]> => {
     const db = await getDB();

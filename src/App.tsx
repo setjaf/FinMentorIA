@@ -5,6 +5,7 @@ import Registro from './pages/registro/Registro';
 import Configuracion from './pages/configuracion/Configuracion';
 import { useCategorias } from './hooks/UseCategorias';
 import { useEffect } from 'react';
+import Inicio from './pages/inicio/Inicio';
 
 function App() {
   // Cargar categorías al inicio
@@ -26,10 +27,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout/>}>
 
-          <Route index element={<Resumen categorias={categorias}/>}/>
+          <Route index element={<Inicio categorias={categorias}/>}/>
           <Route path='/registrar' element={<Registro categorias={categorias}/>}/>
           <Route path='/configuracion' element={<Configuracion />}/>
-
+          <Route path='/resumen' element={<Resumen categorias={categorias}/>}/>
+          
         </Route>
       </Routes>
     </div>

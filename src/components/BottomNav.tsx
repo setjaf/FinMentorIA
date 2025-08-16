@@ -1,4 +1,4 @@
-import { Home, PlusCircle, Settings } from "lucide-react";
+import { ChartBar, ChartBarStacked, ChartColumn, Home, PlusCircle, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export const BottomNav = () => {
@@ -24,6 +24,15 @@ export const BottomNav = () => {
         <PlusCircle />
         <span className="text-xs">Registrar</span>
       </button>
+      <button
+        type="button"
+        onClick={() => navigate("/resumen")}
+        className={`flex flex-col items-center w-10 ${pathname === "/configuracion" ? "text-blue-900" : "text-gray-600"}`}
+      >
+        <ChartColumn/>
+        <span className="text-xs">Resumen</span>
+      </button>
+
       <button
         type="button"
         onClick={() => navigate("/configuracion")}
