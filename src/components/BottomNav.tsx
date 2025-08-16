@@ -27,7 +27,7 @@ export const BottomNav = () => {
       <button
         type="button"
         onClick={() => navigate("/resumen")}
-        className={`flex flex-col items-center w-10 ${pathname === "/configuracion" ? "text-blue-900" : "text-gray-600"}`}
+        className={`flex flex-col items-center w-10 ${pathname === "/resumen" ? "text-blue-900" : "text-gray-600"}`}
       >
         <ChartColumn/>
         <span className="text-xs">Resumen</span>

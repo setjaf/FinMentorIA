@@ -30,6 +30,12 @@ export const SidebarMenu = ({menuIsOpen, onMenuClose}:Props) => {
                 Nuevo gasto
             </button>
             <button
+                className={`block w-full text-left p-2 rounded-md ${location.pathname === '/resumen' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
+                onClick={() => handleMenuClick("/resumen")}
+            >
+                Resumen
+            </button>
+            <button
                 className={`block w-full text-left p-2 rounded-md ${location.pathname === '/configuracion' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
                 onClick={() => handleMenuClick("/configuracion")}
             >

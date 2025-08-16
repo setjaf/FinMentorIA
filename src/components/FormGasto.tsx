@@ -3,6 +3,7 @@ import type { CategoriaType } from "../types/CategoriaType";
 import { useGastos } from "../hooks/UseGastos";
 import { useNavigate } from "react-router-dom";
 import { localNow } from "../utils/TimeUtil";
+import { ConfirmationModal } from "./ConfirmationModal";
 
 interface Props {
   onClose: () => void;
@@ -159,28 +160,15 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
           )}
         </div>
       </form>
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-xs w-full">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">¿Eliminar gasto?</h2>
-            <p className="mb-6 text-gray-600">¿Estás seguro de que deseas eliminar este gasto? Esta acción no se puede deshacer.</p>
-            <div className="flex justify-end gap-2">
-              <button
-                className="px-4 py-2 rounded bg-gray-200 text-gray-800 hover:bg-gray-300"
-                onClick={() => setShowDeleteModal(false)}
-              >
-                Cancelar
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
-                onClick={handleDelete}
-              >
-                Eliminar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmationModal 
+        isOpen={showDeleteModal}
+        title="Eliminar gasto"
+        message="¿Estás seguro de que deseas eliminar este gasto?"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+      />
     </>
   );
 };

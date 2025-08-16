@@ -1,12 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDeletedGastos } from "../../../hooks/useDeletedGastos";
 import { RotateCcw, Trash2 } from "lucide-react";
 import { useCategorias } from "../../../hooks/UseCategorias";
+import { ConfirmationModal } from "../../../components/ConfirmationModal";
 
 
 const PapeleraGastos = () => {
 
     const { categorias, cargar: cargarCategorias } = useCategorias();
+    const [modalState, setModalState] = useState<{
+        isOpen: boolean;
+        title: string;
+        message: string;
+        onConfirm: () => void;
+        confirmText?: string;
+    }>({
+        isOpen: false,
+        title: '',
+        message: '',
+        onConfirm: () => { },
+    });
 
 
     const {
@@ -41,30 +54,44 @@ const PapeleraGastos = () => {
 
 
 
-    const handleRestaurar = async (id: number | undefined) => {
+    const handleRestaurar = (id: number | undefined) => {
         if (!id) return;
-        // Confirmación antes de restaurar
-        if (window.confirm('¿Estás seguro de que quieres restaurar este gasto?')) {
-            await restaurar(id);
-        }
+        setModalState({
+            isOpen: true,
+            title: 'Restaurar Gasto',
+            message: '¿Estás seguro de que quieres restaurar este gasto?',
+            confirmText: 'Restaurar',
+            onConfirm: async () => {
+                await restaurar(id);
+                closeModal();
+            },
+        });
     };
 
-    const handleEliminarPermanente = async (id: number | undefined) => {
+    const handleEliminarPermanente = (id: number | undefined) => {
         if (!id) return;
-        // Confirmación antes de eliminar permanentemente
-        if (window.confirm('¿Estás seguro de que quieres eliminar este gasto permanentemente? Esta acción no se puede deshacer.')) {
-            await eliminarPermanente(id);
-        }
+        setModalState({
+            isOpen: true,
+            title: 'Eliminar Gasto',
+            message: '¿Estás seguro de que quieres eliminar este gasto permanentemente? Esta acción no se puede deshacer.',
+            confirmText: 'Eliminar',
+            onConfirm: async () => {
+                await eliminarPermanente(id);
+                closeModal();
+            },
+        });
     };
 
+    const closeModal = () => {
+        setModalState({ ...modalState, isOpen: false });
+    };
 
     return (
-
-        < div className="space-y-4 pt-2 mt-2" >
-            <h2 className="text-lg font-semibold text-gray-800">Gastos Eliminados (Papelera)</h2>
-            {estadoEliminados === 'loading' && <p className="text-gray-500">Cargando gastos eliminados...</p>}
-            {
-                estadoEliminados === 'success' && gastosEliminados.length === 0 && (
+        <>
+            <div className="space-y-4 pt-2 mt-2" >
+                <h2 className="text-lg font-semibold text-gray-800">Gastos Eliminados (Papelera)</h2>
+                {estadoEliminados === 'loading' && <p className="text-gray-500">Cargando gastos eliminados...</p>}
+                {estadoEliminados === 'success' && gastosEliminados.length === 0 && (
                     <p className="text-gray-500 text-sm">No hay gastos en la papelera.</p>
                 )
             }
@@ -105,7 +132,17 @@ const PapeleraGastos = () => {
                     );
                 })}
             </div>
-        </div >
+            </div >
+            <ConfirmationModal
+                isOpen={modalState.isOpen}
+                title={modalState.title}
+                message={modalState.message}
+                onConfirm={modalState.onConfirm}
+                onCancel={closeModal}
+                confirmText={modalState.confirmText}
+                isGreen={modalState.confirmText === 'Restaurar'}
+            />
+        </>
     );
 }
 

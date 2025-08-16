@@ -57,8 +57,8 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
   return (
     <div className="p-4 bg-white rounded-lg">
       <div className="text-center mb-4">
-        <p className="text-sm text-gray-500">Total de gastos de hoy</p>
-        <p className="text-3xl text-blue-900 font-light tracking-wide">${totalDelDia.toFixed(2)}</p>
+        <p className="text-center text-sm text-gray-500 mb-1">Total de gastos de hoy</p>
+        <p className="text-4xl text-center text-blue-900 font-light tracking-wide">${totalDelDia.toFixed(2)}</p>
       </div>
 
       <div className="space-y-3">
@@ -72,8 +72,8 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
             <div key={gasto.id} className={`p-3 rounded-lg shadow-sm bg-white border-l-6 border-l-${color}-500 flex justify-between items-center`}>
               <div>
                 <p className="font-semibold text-gray-800">{categoria?.nombre || 'Sin Categoría'}</p>
-                <p className="text-sm text-gray-600 font-mono">${gasto.cantidad.toFixed(2)}</p>
-                <p className="text-xs text-gray-500 italic mt-1 max-w-xs">{gasto.descripcion}</p>
+                <p className="text-sm text-gray-600">${gasto.cantidad.toFixed(2)}</p>
+                <p className="text-xs text-gray-500 italic max-w-xs">{gasto.descripcion}</p>
               </div>
               <button onClick={() => handleEdit(gasto.id)} title="Editar gasto" className="p-2 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors">
                 <Pencil size={18} />

@@ -8,6 +8,7 @@ type ConfirmationModalProps = {
   onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
+  isGreen?: boolean;
 };
 
 export const ConfirmationModal = ({
@@ -17,7 +18,8 @@ export const ConfirmationModal = ({
   onConfirm,
   onCancel,
   confirmText = 'Confirmar',
-  cancelText = 'Cancelar'
+  cancelText = 'Cancelar',
+  isGreen = false
 }: ConfirmationModalProps) => {
   if (!isOpen) return null;
 
@@ -34,7 +36,7 @@ export const ConfirmationModal = ({
             {cancelText}
           </button>
           <button
-            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+            className={`px-4 py-2 rounded  text-white ${isGreen ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`}
             onClick={onConfirm}
           >
             {confirmText}
