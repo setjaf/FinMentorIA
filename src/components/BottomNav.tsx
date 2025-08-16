@@ -1,4 +1,4 @@
-import { ChartBar, ChartBarStacked, ChartColumn, Home, PlusCircle, Settings } from "lucide-react";
+import { ChartColumn, Home, PlusCircle, Settings } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export const BottomNav = () => {
