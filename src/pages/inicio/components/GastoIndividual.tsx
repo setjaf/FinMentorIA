@@ -42,7 +42,7 @@ const GastoIndividual = memo(
             <>
                 <div
                     key={gasto.id}
-                    className={`p-3 rounded-lg shadow-sm  border-l-6 border-l-${categoria.color}-500 flex justify-between items-center ${contextMenu.visible ? 'bg-blue-100' : 'bg-white'}`}
+                    className={`p-3 rounded-lg shadow-sm  border-l-6 border-l-${categoria.color}-500 flex justify-between items-center ${contextMenu.visible ? 'bg-blue-100' : 'bg-white'} select-none`}
                     onContextMenu={handleContextMenu}
                 >
                     <div>

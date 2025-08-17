@@ -39,7 +39,7 @@ const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
     <li
       onContextMenu={handleContextMenu}
       className={`flex justify-between items-start relative align-middle text-gray-600 p-1 transition-colors
-        ${contextMenu.visible ? 'bg-blue-100' : 'hover:bg-gray-50'} border-b-1 border-b-gray-100
+        ${contextMenu.visible ? 'bg-blue-100' : 'hover:bg-gray-50'} border-b-1 border-b-gray-100 select-none
       `}
     >
 
