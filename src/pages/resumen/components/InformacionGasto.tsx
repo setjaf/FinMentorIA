@@ -1,4 +1,4 @@
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef } from 'react';
 import type { GastoType } from '../../../types/GastoType';
 import type { ContextMenuGastoState } from '../../../components/ContextMenuGasto';
 import ContextMenuGasto from '../../../components/ContextMenuGasto';
@@ -10,6 +10,7 @@ import ContextMenuGasto from '../../../components/ContextMenuGasto';
 // no han cambiado, lo cual es una optimización clave para componentes en una lista.
 const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
   const [contextMenu, setContextMenu] = useState<ContextMenuGastoState>({ visible: false, x: 0, y: 0 });
+  const longPressTimer = useRef<number | null>(null);
     
   // Efecto para manejar el cierre del menú contextual al hacer clic fuera
   useEffect(() => {
@@ -21,14 +22,34 @@ const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
       document.removeEventListener('click', handleClick);
     };
   }, [contextMenu]);
+  
+  const openContextMenu = (x: number, y: number) => {
+            setContextMenu({
+                visible: true,
+                x: x,
+                y: y,
+            });
+        };
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setContextMenu({
-      visible: true,
-      x: e.clientX,
-      y: e.clientY,
-    });
+      e.preventDefault(); // Previene el menú contextual del navegador
+      openContextMenu(e.clientX, e.clientY);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+      const touch = e.touches[0];
+      longPressTimer.current = window.setTimeout(() => {
+          openContextMenu(touch.clientX, touch.clientY);
+      }, 500); // 500ms para un toque largo
+  };
+
+  const handleTouchMove = () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+  };
+
+  const handleTouchEnd = () => {
+      if (longPressTimer.current) clearTimeout(longPressTimer.current);
   };
 
   const handleCloseContextMenu = () => {
@@ -37,6 +58,9 @@ const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
 
   return (
     <li
+      onTouchStart={handleTouchStart}     // Para simular toque largo en móviles
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       onContextMenu={handleContextMenu}
       className={`flex justify-between items-start relative align-middle text-gray-600 p-1 transition-colors
         ${contextMenu.visible ? 'bg-blue-100' : 'hover:bg-gray-50'} border-b-1 border-b-gray-100 select-none

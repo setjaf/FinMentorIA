@@ -126,7 +126,7 @@ export default function Resumen({ categorias }: ResumenProps) {
         )}
         {Object.entries(gastosAgrupados ?? {}).sort(([catA], [catB]) => catA.localeCompare(catB)).map(([categoria, lista]) => {          
           return (
-            <CategoriaDetail categoria={categorias.find(c => c.id == categoria)!} gastos={lista} />
+            <CategoriaDetail key={categoria} categoria={categorias.find(c => c.id == categoria)!} gastos={lista} />
           );
         })}
       </div>
