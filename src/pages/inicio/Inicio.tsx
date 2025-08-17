@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Pencil } from 'lucide-react';
 import type { GastoType } from '../../types/GastoType';
 import type { CategoriaType } from '../../types/CategoriaType';
 import * as GastosDB from '../../db/GastosDB';
 import { localNow } from '../../utils/TimeUtil';
+import GastoIndividual from './components/GastoIndividual';
 
 type GastosDelDiaProps = {
   categorias: CategoriaType[];
@@ -19,7 +18,6 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
   const [gastos, setGastos] = useState<GastoType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
 
   const cargarGastos = useCallback(async () => {
     setLoading(true);
@@ -49,11 +47,6 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
     return gastos.reduce((total, gasto) => total + gasto.cantidad, 0);
   }, [gastos]);
 
-  const handleEdit = (id: number | undefined) => {
-    if (!id) return;
-    navigate(`/registrar?id=${id}`);
-  };
-
   return (
     <div className="p-4 bg-white rounded-lg">
       <div className="text-center mb-4">
@@ -67,18 +60,8 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
         {!loading && gastos.length === 0 && <p className="text-center text-gray-500 pt-4">Aún no has registrado gastos hoy.</p>}
         {gastos.map((gasto) => {
           const categoria = categorias.find(c => c.id === Number(gasto.categoria));
-          const color = categoria?.color || 'gray';
           return (
-            <div key={gasto.id} className={`p-3 rounded-lg shadow-sm bg-white border-l-6 border-l-${color}-500 flex justify-between items-center`}>
-              <div>
-                <p className="font-semibold text-gray-800">{categoria?.nombre || 'Sin Categoría'}</p>
-                <p className="text-sm text-gray-600">${gasto.cantidad.toFixed(2)}</p>
-                <p className="text-xs text-gray-500 italic max-w-xs">{gasto.descripcion}</p>
-              </div>
-              <button onClick={() => handleEdit(gasto.id)} title="Editar gasto" className="p-2 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors">
-                <Pencil size={18} />
-              </button>
-            </div>
+            <GastoIndividual key={gasto.id} gasto={gasto} categoria={categoria || {} as CategoriaType} />
           );
         })}
       </div>

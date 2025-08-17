@@ -1,57 +1,61 @@
-import { memo, useState } from 'react';
-import { Info, Pencil } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+import { memo, useState, useEffect } from 'react';
 import type { GastoType } from '../../../types/GastoType';
+import type { ContextMenuGastoState } from '../../../components/ContextMenuGasto';
+import ContextMenuGasto from '../../../components/ContextMenuGasto';
+
+
 
 // Envolvemos el componente con React.memo.
 // Esto evita que se vuelva a renderizar si sus props (en este caso, `gasto`)
 // no han cambiado, lo cual es una optimización clave para componentes en una lista.
 const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
-  const [show, setShow] = useState(false);
-  const navigate = useNavigate();
-  
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    // Puedes pasar el id del gasto por query param o state
-    navigate(`/registrar?id=${gasto.id}`);
+  const [contextMenu, setContextMenu] = useState<ContextMenuGastoState>({ visible: false, x: 0, y: 0 });
+    
+  // Efecto para manejar el cierre del menú contextual al hacer clic fuera
+  useEffect(() => {
+    const handleClick = () => setContextMenu({ ...contextMenu, visible: false });
+    if (contextMenu.visible) {
+      document.addEventListener('click', handleClick);
+    }
+    return () => {
+      document.removeEventListener('click', handleClick);
+    };
+  }, [contextMenu]);
+
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({
+      visible: true,
+      x: e.clientX,
+      y: e.clientY,
+    });
   };
+
+  const handleCloseContextMenu = () => {
+    setContextMenu({ ...contextMenu, visible: false });
+  }
 
   return (
     <li
-      onClick={() => setShow((v) => !v)}
-      className="flex justify-between items-center relative align-middle text-gray-600 focus:text-blue-900"
+      onContextMenu={handleContextMenu}
+      className={`flex justify-between items-start relative align-middle text-gray-600 p-1 transition-colors
+        ${contextMenu.visible ? 'bg-blue-100' : 'hover:bg-gray-50'} border-b-1 border-b-gray-100
+      `}
     >
-      <span className="flex align-middle">
-        {
-          gasto.descripcion && (
-            <button
-              type="button"
-              className="relative mr-1 focus:text-blue-900"
-              tabIndex={0}
-            >
-              <Info size={20} />
-              {show && (
-                <div
-                  className={`absolute left-0 top-full mt-1 z-50 bg-white border border-gray-300 rounded shadow-lg p-2 text-xs text-gray-800 min-w-[80px] max-w-[180px]`}
-                >
-                  {gasto.descripcion}
-                </div>
-              )}
-            </button>
-          )
-        }
-        {gasto.fecha.split('-').reverse().join('/')}
-      </span>
+
+      <div className='flex flex-col items-start gap-2'>
+        <span className="flex align-middle">
+          {gasto.fecha.split('-').reverse().join('/')}          
+        </span>
+        <p className="text-xs text-gray-500 italic max-w-80">{gasto.descripcion}</p>
+      </div>
+
       <span className="flex items-center gap-2">
         ${gasto.cantidad.toFixed(2)}
-        {show && (
-          <button
-            type="button"
-            tabIndex={1}
-            onClick={handleEdit}>
-            <Pencil size={20} />
-          </button>)}
       </span>
+
+      <ContextMenuGasto gasto={gasto} contextMenu={contextMenu} onCloseContextMenu={handleCloseContextMenu} />
+      
     </li>
   );
 });

@@ -21,7 +21,7 @@ const CategoriaDetail = memo(({ categoria, gastos }: CategoriaDetailProps) => {
             key={categoria?.id + categoria?.nombre}
             className={`group bg-white rounded-lg shadow-md border-l-10 border-l-${categoria?.color||'gray'}-500`}
         >
-            <summary className="flex justify-between items-center p-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
+            <summary className="flex justify-between items-center p-4 pb-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
                 <span className="font-medium text-gray-600">{categoria?.nombre || 'Categoria'}</span>
                 <span className="text-gray-600 font-semibold flex items-center">
                     ${total.toFixed(2)}
@@ -29,7 +29,7 @@ const CategoriaDetail = memo(({ categoria, gastos }: CategoriaDetailProps) => {
                 </span>
                 
             </summary>
-            <ul className="px-4 pb-3 text-sm text-gray-600 mt-2 space-y-1">
+            <ul className="px-4 pb-3 text-sm text-gray-600 space-y-1">
                 {gastos.map((g, i) => (
                     <InformacionGasto key={i} gasto={g} />
                 ))}
