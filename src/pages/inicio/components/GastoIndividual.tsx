@@ -71,9 +71,11 @@ const GastoIndividual = memo(
                     style={{ WebkitTouchCallout: 'none' }} // Evita el menú nativo de iOS
                 >
                     <div>
-                        <p className="font-semibold text-gray-800">{categoria?.nombre || 'Sin Categoría'}</p>
-                        <p className="text-sm text-gray-600">${gasto.cantidad.toFixed(2)}</p>
+                        <p className="font-semibold text-gray-600">{categoria?.nombre || 'Sin Categoría'}</p>                        
                         <p className="text-xs text-gray-500 italic max-w-xs">{gasto.descripcion}</p>
+                    </div>
+                    <div>
+                        <p className="text-sm text-gray-600">${gasto.cantidad.toFixed(2)}</p>
                     </div>
                 </div>
 

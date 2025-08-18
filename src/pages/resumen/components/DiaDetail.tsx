@@ -1,16 +1,17 @@
 import { memo, useMemo } from "react";
 import type { CategoriaType } from "../../../types/CategoriaType";
 import type { GastoType } from "../../../types/GastoType";
-import InformacionGastoCategoria from "./InformacionGastoCategoria";
 import { ChevronDown } from "lucide-react";
+import InformacionGastoDia from "./InformacionGastoDia";
 
-type CategoriaDetailProps = {
-    categoria: CategoriaType;
+type DiaDetailProps = {
+    dia: string;
     gastos: GastoType[];
+    categorias: CategoriaType[];
 };
 
 
-const CategoriaDetail = memo(({ categoria, gastos }: CategoriaDetailProps) => {
+const CategoriaDetail = memo(({ dia, gastos, categorias }: DiaDetailProps) => {
 
     const total = useMemo(() => {
         return gastos.reduce((sum, g) => sum + g.cantidad, 0);
@@ -18,11 +19,11 @@ const CategoriaDetail = memo(({ categoria, gastos }: CategoriaDetailProps) => {
 
     return (
         <details
-            key={categoria?.id + categoria?.nombre}
-            className={`group bg-white rounded-lg shadow-md border-l-10 border-l-${categoria?.color||'gray'}-500`}
+            key={dia}
+            className={`group bg-white rounded-lg shadow-md`}
         >
             <summary className="flex justify-between items-center p-4 pb-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
-                <span className="font-medium text-gray-600">{categoria?.nombre || 'Categoria'}</span>
+                <span className="font-medium text-gray-600">{dia.split('-').reverse().join('/')}</span>
                 <span className="text-gray-600 font-semibold flex items-center">
                     ${total.toFixed(2)}
                     <ChevronDown className="transform transition-transform duration-300 group-open:rotate-180 text-gray-600" />
@@ -31,7 +32,7 @@ const CategoriaDetail = memo(({ categoria, gastos }: CategoriaDetailProps) => {
             </summary>
             <ul className="px-4 pb-3 text-sm text-gray-600 space-y-1">
                 {gastos.map((g, i) => (
-                    <InformacionGastoCategoria key={i} gasto={g} />
+                    <InformacionGastoDia key={i} gasto={g} categoria={categorias.find(c => c.id == g.categoria)!} />
                 ))}
             </ul>
         </details>

@@ -105,7 +105,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             placeholder="Cantidad"
             value={cantidad}
             onChange={(e) => setCantidad(e.target.value)}
-            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.cantidad ? "border-red-500" : ""}`}
+            className={`w-full shadow-md border-1 border-gray-100 rounded-lg p-3 ${errores.cantidad ? "border-red-500" : ""}`}
           />
           {errores.cantidad && <p className="text-red-500 text-sm mt-1">Cantidad inválida</p>}
         </div>
@@ -113,7 +113,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
           <select
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
-            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.categoria ? "border-red-500" : ""}`}
+            className={`w-full shadow-md border-1 border-gray-100 rounded-lg p-3 ${errores.categoria ? "border-red-500" : ""}`}
           >
             <option value="">Selecciona categoría</option>
             {categorias.map((item, index) => (
@@ -129,7 +129,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             type="date"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
-            className={`w-full border-2 border-gray-300 rounded-lg p-3 ${errores.fecha ? "border-red-500" : ""}`}
+            className={`w-full shadow-md border-1 border-gray-100 rounded-lg p-3 ${errores.fecha ? "border-red-500" : ""}`}
           />
           {errores.fecha && <p className="text-red-500 text-sm mt-1">Fecha requerida</p>}
         </div>
@@ -139,7 +139,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             placeholder="Descripción (opcional)"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
-            className="w-full border-2 border-gray-300 rounded-lg p-3"
+            className="w-full shadow-md border-1 border-gray-100 rounded-lg p-3"
           />
         </div>
         <div className="flex gap-2">

@@ -1,4 +1,4 @@
-import { Menu } from "lucide-react";
+import { Menu, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -23,10 +23,11 @@ export const TopHeader = ({ onMenuClick }: Props) => {
       </button>
       {!isInicio && (
         <button
-          className="text-blue-900 text-sm px-4"
-          onClick={() => navigate("/")}
+          className="inline-flex items-center text-blue-900 text-sm px-2 py-1 rounded-md hover:bg-gray-100"
+          onClick={() => navigate(-1)}
         >
-          ← Inicio
+          <ArrowLeft size={18} className="mr-1" />
+          Regresar
         </button>
       )}
     </header>

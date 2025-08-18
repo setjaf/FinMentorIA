@@ -111,6 +111,17 @@ export function useGastos() {
     []
   );
 
+  const agruparPorDia = useCallback(
+    (gastosDelPeriodo: GastoType[]): Record<string, GastoType[]> => {
+      return gastosDelPeriodo
+        .reduce((acc, g) => {
+          (acc[g.fecha] ||= []).push(g);
+          return acc;
+        }, {} as Record<string, GastoType[]>);
+    },
+    []
+  );
+
   return {
     // acciones
     crear,
@@ -128,5 +139,6 @@ export function useGastos() {
     // Funciones de cálculo puras
     calcularTotal,
     agruparPorCategoria,
+    agruparPorDia,
   };
 }

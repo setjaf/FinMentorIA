@@ -2,13 +2,18 @@ import { memo, useState, useEffect, useRef } from 'react';
 import type { GastoType } from '../../../types/GastoType';
 import type { ContextMenuGastoState } from '../../../components/ContextMenuGasto';
 import ContextMenuGasto from '../../../components/ContextMenuGasto';
+import type { CategoriaType } from '../../../types/CategoriaType';
 
+type InformacionGastoDiaProps = {
+  gasto: GastoType;
+  categoria: CategoriaType;
+};
 
 
 // Envolvemos el componente con React.memo.
 // Esto evita que se vuelva a renderizar si sus props (en este caso, `gasto`)
 // no han cambiado, lo cual es una optimización clave para componentes en una lista.
-const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
+const InformacionGasto = memo(({gasto, categoria}: InformacionGastoDiaProps) => {
   const [contextMenu, setContextMenu] = useState<ContextMenuGastoState>({ visible: false, x: 0, y: 0 });
   const longPressTimer = useRef<number | null>(null);
     
@@ -64,12 +69,13 @@ const InformacionGasto = memo(({ gasto }: { gasto: GastoType }) => {
       onContextMenu={handleContextMenu}
       className={`flex justify-between items-start relative align-middle text-gray-600 p-1 transition-colors
         ${contextMenu.visible ? 'bg-blue-100' : 'hover:bg-gray-50'} border-b-1 border-b-gray-100 select-none
+        border-l-4 border-l-${categoria?.color || 'gray'}-500
       `}
     >
 
       <div className='flex flex-col items-start gap-2'>
         <span className="flex align-middle">
-          {gasto.fecha.split('-').reverse().join('/')}          
+          {categoria?.nombre || 'Sin Categoría'}          
         </span>
         <p className="text-xs text-gray-500 italic max-w-80">{gasto.descripcion}</p>
       </div>

@@ -1,4 +1,4 @@
-import type { AgrupadoGastoType, GastoType } from '../types/GastoType';
+import type { GastoType } from '../types/GastoType';
 import { getDB } from './InitializeDB';
 
 const STORE_NAME = 'gastos';
@@ -94,17 +94,6 @@ export const clearGastos = async (): Promise<void> => {
     await db.clear(STORE_NAME);
 };
 
-
-// Obtiene los gastos agrupados por categoría
-export const getGastosAgrupadosPorCategoria = async (yyyyMm: string): Promise<AgrupadoGastoType> => {
-    const all = await getGastosPorMes(yyyyMm); // Obtiene gastos del mes actual
-    if (!all) return {};
-    return all.reduce((acc: { [categoria: string]: GastoType[] }, gasto: GastoType) => {
-        if (!acc[gasto.categoria]) acc[gasto.categoria] = [];
-        acc[gasto.categoria].push(gasto);
-        return acc;
-    }, {});
-};
 
 // Devuelve un arreglo con el nombre de las categorías y el total registrado en el año y mes actual
 export const getTotalesPorCategoriaMesActual = async (): Promise<{ idCategoria: string; total: number }[]> => {

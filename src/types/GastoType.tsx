@@ -10,5 +10,5 @@ export interface GastoType {
 }
 
 export interface AgrupadoGastoType {
-  [categoria: string]: GastoType[];
+  [grupo: string]: GastoType[];
 };
