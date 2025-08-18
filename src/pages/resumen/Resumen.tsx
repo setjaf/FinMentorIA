@@ -65,7 +65,11 @@ export default function Resumen({ categorias }: ResumenProps) {
   // Ajusta el mes si el actual no es válido para el año seleccionado.
   useEffect(() => {
     const mesesDelAnio = aniosMeses[anio];
-    if (mesesDelAnio && !mesesDelAnio.has(mes)) {
+    if (!mesesDelAnio) {
+      setAnio(anioActual);
+      setMes(mesActual);
+      return;
+    }else if (mesesDelAnio && !mesesDelAnio.has(mes)) {
       setMes(mesesDelAnio.values().next().value || mesActual);
     }
   }, [anio, aniosMeses, mes]);
