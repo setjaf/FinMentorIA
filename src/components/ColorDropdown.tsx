@@ -15,7 +15,7 @@ export const ColorDropdown = ({ color, setColor }: Props) => {
             <button
                 type="button"
                 onClick={() => setShowColors(!showColors)}
-                className="w-full border border-gray-300 rounded-lg p-2 flex justify-between items-center"
+                className="w-full shadow-md border-1 border-gray-100 rounded-lg p-2 flex justify-between items-center"
             >
                 <span className="flex items-center gap-2">
                     <span className={`w-4 h-4 bg-${color}-500 rounded`} />

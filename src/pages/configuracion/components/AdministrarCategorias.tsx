@@ -21,11 +21,6 @@ const AdministrarCategorias = () => {
 
     useEffect(() => {
         cargar();
-
-        window.addEventListener('gastos:cambio', cargar);
-        return () => {
-            window.removeEventListener('gastos:cambio', cargar);
-        };
     }, [cargar]);
 
     const handleAgregar = async () => {
@@ -72,7 +67,7 @@ const AdministrarCategorias = () => {
                         placeholder="Nombre de la categoría"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
-                        className="w-full border border-gray-300 rounded-lg p-2"
+                        className="w-full shadow-md border-1 border-gray-100 rounded-lg p-2"
                     />
 
                     <ColorDropdown color={color} setColor={setColor} />

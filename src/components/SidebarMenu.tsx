@@ -29,12 +29,29 @@ export const SidebarMenu = ({menuIsOpen, onMenuClose}:Props) => {
             >
                 Nuevo gasto
             </button>
-            <button
+            <details
                 className={`block w-full text-left p-2 rounded-md ${location.pathname === '/resumen' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
-                onClick={() => handleMenuClick("/resumen")}
             >
-                Resumen
-            </button>
+                <summary>Resumen</summary>
+                <button
+                    onClick={() => handleMenuClick("/resumen")}
+                    className={`block w-full text-left p-2 rounded-md ${location.pathname === '/resumen' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
+                >
+                    Mensual
+                </button>
+                <button
+                    onClick={() => handleMenuClick("/resumen?tipo=quincenal")}
+                    className={`block w-full text-left p-2 rounded-md ${location.pathname === '/resumen' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
+                >
+                    Quincenal
+                </button>
+                <button
+                    onClick={() => handleMenuClick("/resumen?tipo=personalizado")}
+                    className={`block w-full text-left p-2 rounded-md ${location.pathname === '/resumen' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
+                >
+                    Personalizado
+                </button>
+            </details>
             <button
                 className={`block w-full text-left p-2 rounded-md ${location.pathname === '/configuracion' ? 'text-blue-900 font-medium bg-gray-100' : 'text-gray-800'}`}
                 onClick={() => handleMenuClick("/configuracion")}
