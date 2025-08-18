@@ -46,6 +46,18 @@ export const getGastosPorMes = async (yyyyMm: string): Promise<GastoType[]> => {
     return gastosActivos.sort((a, b) => b.fecha.localeCompare(a.fecha));
 };
 
+
+// Obtiene los gastos de un rango específico: "2025-01-01" - "2025-01-15"
+export const getGastosPorRango = async (fechaInicio: string, fechaFin: string): Promise<GastoType[]> => {
+    const db = await getDB();
+    const range = IDBKeyRange.bound(`${fechaInicio}`, `${fechaFin}`);
+    const gastosDelMes = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
+    // Filtramos para excluir los gastos borrados lógicamente
+    const gastosActivos = gastosDelMes.filter(gasto => !gasto.deletedAt);
+    // Ordenamos por fecha descendente para mostrar los más recientes primero
+    return gastosActivos.sort((a, b) => b.fecha.localeCompare(a.fecha));
+};
+
 // Elimina un gasto por ID
 export const deleteGasto = async (id: number): Promise<void> => {
     const db = await getDB();

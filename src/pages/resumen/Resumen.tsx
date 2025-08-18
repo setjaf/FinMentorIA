@@ -1,160 +1,84 @@
-// Devuelve una lista de años únicos presentes en gastosAgrupados
-
-import { useEffect, useMemo, useState, useCallback } from 'react';
-import type { AgrupadoGastoType, GastoType } from '../../types/GastoType';
+import { useMemo, useState } from 'react';
+import type { AgrupadoGastoType} from '../../types/GastoType';
 import type { CategoriaType } from '../../types/CategoriaType';
 import { useGastos } from '../../hooks/UseGastos';
-import { meses } from '../../types/catalogs/MesesCatalog';
-import { localNow } from '../../utils/TimeUtil';
 import CategoriaDetail from './components/CategoriaDetail';
 import SwitchButton from './components/SwitchButton';
 import DiaDetail from './components/DiaDetail';
-
-const mesActual = (localNow().getMonth() + 1).toString().padStart(2, '0');
-const anioActual = localNow().getFullYear().toString();
+import PeriodoSelector from './components/PeriodoSelector';
+import { useResumen } from '../../hooks/useResumen';
 
 type ResumenProps = {
   categorias: CategoriaType[];
 };
 
 export default function Resumen({ categorias }: ResumenProps) {
-  const [anio, setAnio] = useState(anioActual);
-  const [mes, setMes] = useState(mesActual);
-  const [gastosDelMes, setGastosDelMes] = useState<GastoType[]>([]);
-  const [aniosMeses, setAniosMeses] = useState<{ [anio: string]: Set<string> }>({});
   const [viewMode, setViewMode] = useState<'categoria' | 'dia'>('dia');
-  const [loading, setLoading] = useState(true);
-  const [componentError, setComponentError] = useState<string | null>(null);
+  
+  // 1. Consumimos el hook. Toda la lógica de estado y carga de datos está aquí.
+  const { state, setPeriodo } = useResumen();
+  const { gastos, aniosMeses, loading, error, tipo, anio, mes, quincena, fechaInicio, fechaFin } = state;
 
-  const { fetchGastosPorMes, fetchAniosMesesDisponibles, agruparPorCategoria, agruparPorDia, calcularTotal } = useGastos();
-
-  // Función para cargar todos los datos necesarios para la vista.
-  const cargarDatos = useCallback(async () => {
-    setLoading(true);
-    setComponentError(null);
-    try {
-      const [gastos, disponibles] = await Promise.all([
-        fetchGastosPorMes(`${anio}-${mes}`),
-        fetchAniosMesesDisponibles(),
-      ]);
-
-      // Aseguramos que el mes y año actual siempre estén disponibles para seleccionar
-      disponibles[anioActual] = disponibles[anioActual] || new Set();
-      disponibles[anioActual].add(mesActual);
-
-      setGastosDelMes(gastos);
-      setAniosMeses(disponibles);
-    } catch (err: any) {
-      setComponentError(err.message || 'Ocurrió un error al cargar los datos.');
-    } finally {
-      setLoading(false);
-    }
-  }, [anio, mes, fetchGastosPorMes, fetchAniosMesesDisponibles]);
-
-  // Carga inicial y cuando cambia el mes/año
-  useEffect(() => {
-    cargarDatos();
-  }, [cargarDatos]);
-
-  // Escucha eventos globales para recargar si hay cambios en la BD
-  useEffect(() => {
-    window.addEventListener('gastos:cambio', cargarDatos);
-    return () => window.removeEventListener('gastos:cambio', cargarDatos);
-  }, [cargarDatos]);
-
-  // Ajusta el mes si el actual no es válido para el año seleccionado.
-  useEffect(() => {
-    const mesesDelAnio = aniosMeses[anio];
-    if (!mesesDelAnio) {
-      setAnio(anioActual);
-      setMes(mesActual);
-      return;
-    }else if (mesesDelAnio && !mesesDelAnio.has(mes)) {
-      setMes(mesesDelAnio.values().next().value || mesActual);
-    }
-  }, [anio, aniosMeses, mes]);
+  // El hook `useGastos` sigue siendo útil para las funciones de agrupación y cálculo.
+  const { agruparPorCategoria, agruparPorDia, calcularTotal } = useGastos();
 
   // Calculamos valores derivados con useMemo para optimización.
   const gastosAgrupados = useMemo<AgrupadoGastoType>(() => {
     switch (viewMode) {
-
       case 'dia':
-        return agruparPorDia(gastosDelMes);
-
+        return agruparPorDia(gastos);
       case 'categoria':
-        return agruparPorCategoria(gastosDelMes);
-
+        return agruparPorCategoria(gastos);
       default:
-        break;
+        return {} as AgrupadoGastoType;
     }
-    return {} as AgrupadoGastoType;
-  }, [gastosDelMes, viewMode, agruparPorCategoria]);
+  }, [gastos, viewMode, agruparPorCategoria, agruparPorDia]);
 
   const acumulado = useMemo(() => {
-    return calcularTotal(gastosDelMes);
-  }, [gastosDelMes, calcularTotal]);
-
-  const handleViewChange = (mode: 'categoria' | 'dia') => {
-    console.log(`Cambiando a la vista: ${mode}`);
-    console.log(gastosAgrupados);
-
-    setViewMode(mode);
-  };
+    return calcularTotal(gastos);
+  }, [gastos, calcularTotal]);
 
   return (
     <>
       <div className="text-center">
         <h1 className="text-2xl font-semibold text-gray-900">
-          Resumen Mensual
+          Resumen {tipo.charAt(0).toUpperCase() + tipo.slice(1)}
         </h1>
-        {/* <!-- Total de gastos mensual destacado --> */}
         <div className="px-4 pt-2 pb-4">
-          <p className="text-center text-sm text-gray-500 mb-1">Total de gastos en {meses.find(m => m.value === mes.toString())?.label} {anio}</p>
+          <p className="text-center text-sm text-gray-500 mb-1">Total de gastos del período</p>
           <p className="text-4xl text-center text-blue-900 font-light tracking-wide">${acumulado.toFixed(2)}</p>
         </div>
       </div>
 
       {/* Botón Switch para cambiar la vista */}
-      <SwitchButton onChangeView={handleViewChange} viewMode={viewMode} />
+      <SwitchButton onChangeView={setViewMode} viewMode={viewMode} />
 
-      <div className="flex gap-2">
-        <select
-          className="border-1 border-gray-100 rounded-lg p-2 w-1/2 shadow-md"
-          value={anio}
-          onChange={(e) => setAnio(e.target.value)}
-        >
-          {Object.keys(aniosMeses).sort((a, b) => a.localeCompare(b)).map((a) => (
-            <option key={a} value={a}>
-              {a}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border-1 border-gray-100 rounded-lg p-2 w-1/2 shadow-md"
-          value={mes}
-          onChange={(e) => setMes(e.target.value)}
-        >
-          {Array.from(aniosMeses[anio] || []).sort((a, b) => a.localeCompare(b)).map((m) => {
-            const mesObj = meses.find(me => me.value === m);
-            return (
-              <option key={m} value={m}>
-                {mesObj ? mesObj.label : m}
-              </option>
-            )
-          })}
-        </select>
-      </div>
+      {/* 2. Usamos el componente selector de período */}
+      <PeriodoSelector
+        tipo={tipo}
+        anio={anio}
+        setAnio={(a) => setPeriodo({ anio: a })}
+        mes={mes}
+        setMes={(m) => setPeriodo({ mes: m })}
+        aniosMeses={aniosMeses}
+        quincena={quincena}
+        setQuincena={(q) => setPeriodo({ quincena: q })}
+        fechaInicio={fechaInicio}
+        setFechaInicio={(d) => setPeriodo({ fechaInicio: d })}
+        fechaFin={fechaFin}
+        setFechaFin={(d) => setPeriodo({ fechaFin: d })}
+      />
 
       <div className="space-y-3">
         {loading && <p className="text-center text-gray-500">Cargando...</p>}
-        {componentError && <p className="text-center text-red-500">{componentError}</p>}
+        {error && <p className="text-center text-red-500">{error}</p>}
         {!loading && Object.keys(gastosAgrupados).length === 0 && (
           <p className="text-center text-gray-500 pt-8">
-            No hay gastos registrados para este mes.
+            No hay gastos registrados para este período.
           </p>
         )}
         {
-          viewMode === 'categoria' && (Object.entries(gastosAgrupados ?? {}).sort(([catA], [catB]) => catA.localeCompare(catB)).map(([categoria, lista]) => {
+          !loading && viewMode === 'categoria' && (Object.entries(gastosAgrupados ?? {}).sort(([catA], [catB]) => catA.localeCompare(catB)).map(([categoria, lista]) => {
             return (
               <CategoriaDetail key={categoria} categoria={categorias.find(c => c.id == categoria)!} gastos={lista} />
             );
@@ -162,7 +86,7 @@ export default function Resumen({ categorias }: ResumenProps) {
         }
 
         {
-          viewMode === 'dia' && (Object.entries(gastosAgrupados ?? {}).sort(([diaA], [diaB]) => diaB.localeCompare(diaA)).map(([dia, lista]) => {
+          !loading && viewMode === 'dia' && (Object.entries(gastosAgrupados ?? {}).sort(([diaA], [diaB]) => diaB.localeCompare(diaA)).map(([dia, lista]) => {
             return (
               <DiaDetail key={dia} dia={dia} gastos={lista} categorias={categorias} />
             );
