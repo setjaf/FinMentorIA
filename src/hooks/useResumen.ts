@@ -28,6 +28,8 @@ type ResumenAction =
 
 const mesActual = localNow().toISOString().slice(5, 7);
 const anioActual = localNow().getFullYear().toString();
+const diaActual = localNow().getDate();
+
 
 // 3. Estado inicial
 const initialState: ResumenState = {
@@ -36,7 +38,7 @@ const initialState: ResumenState = {
     mes: mesActual,
     quincena: 'primera',
     fechaInicio: `${anioActual}-${mesActual}-01`,
-    fechaFin: `${anioActual}-${mesActual}-15`,
+    fechaFin: `${anioActual}-${mesActual}-${diaActual}`,
     gastos: [],
     aniosMeses: {},
     loading: true,
