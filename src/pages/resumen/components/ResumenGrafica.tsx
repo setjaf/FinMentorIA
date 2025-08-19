@@ -125,7 +125,7 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
               <Tooltip
                 cursor={{ fill: 'rgba(243, 244, 246, 0.5)' }}
                 formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total']}
-                labelFormatter={(label, payload) => payload?.[0]?.payload.fullDate}
+                labelFormatter={(label, payload) => payload?.[0]?.payload.fullDate || label}
               />
               <Bar dataKey="total" fill="#3b82f6" barSize={20} />
             </BarChart>
