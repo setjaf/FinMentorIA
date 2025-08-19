@@ -23,7 +23,7 @@ type ResumenAction =
     | { type: 'SET_TIPO'; payload: ResumenState['tipo'] }
     | { type: 'SET_PERIODO'; payload: Partial<Pick<ResumenState, 'anio' | 'mes' | 'quincena' | 'fechaInicio' | 'fechaFin'>> }
     | { type: 'FETCH_START' }
-    | { type: 'FETCH_SUCCESS'; payload: { gastos: GastoType[]; aniosMeses: ResumenState['aniosMeses'] } }
+    | { type: 'FETCH_SUCCESS'; payload: { gastos: GastoType[]; aniosMeses: ResumenState['aniosMeses'], fechaInicio: string, fechaFin: string } }
     | { type: 'FETCH_ERROR'; payload: string };
 
 const mesActual = localNow().toISOString().slice(5, 7);
@@ -105,7 +105,7 @@ export function useResumen() {
             }
 
             if (!fechaInicio || !fechaFin) {
-                dispatch({ type: 'FETCH_SUCCESS', payload: { gastos: [], aniosMeses: {} } });
+                dispatch({ type: 'FETCH_SUCCESS', payload: { gastos: [], aniosMeses: {}, fechaInicio, fechaFin  } });
                 return;
             }
 
@@ -117,7 +117,7 @@ export function useResumen() {
             console.log({ gastos, aniosMeses });
 
 
-            dispatch({ type: 'FETCH_SUCCESS', payload: { gastos, aniosMeses } });
+            dispatch({ type: 'FETCH_SUCCESS', payload: { gastos, aniosMeses, fechaInicio, fechaFin  } });
 
         } catch (err: any) {
             dispatch({ type: 'FETCH_ERROR', payload: err.message || 'Error al cargar datos' });

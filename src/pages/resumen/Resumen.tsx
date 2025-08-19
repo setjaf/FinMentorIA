@@ -121,9 +121,9 @@ export default function Resumen({ categorias }: ResumenProps) {
             onClick={() => setShowChart(!showChart)}
             title={showChart ? "Ver lista" : "Ver gráfica"}
             aria-label={showChart ? "Ver lista" : "Ver gráfica"}
-            className="bg-indigo-600 text-white p-4 rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-300 ease-in-out"
+            className="bg-gray-600 w-12 h-12 flex items-center justify-center text-white p-4 rounded-full shadow-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300 ease-in-out"
           >
-            {showChart ? <List size={24} /> : <BarChart3 size={24} />}
+            {showChart ? <List size={20} /> : <BarChart3 size={20} />}
           </button>
         )}
       </div>
