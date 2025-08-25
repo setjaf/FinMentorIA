@@ -167,6 +167,7 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
                                 ))}
                             </Pie>
                             <Tooltip formatter={(value: number, name: string, entry: any) => {
+                                console.log(name);                                
                                 const percent = (entry.payload.percent * 100).toFixed(2);
                                 return [`$${value.toFixed(2)} (${percent}%)`, 'Total'];
                             }} />
