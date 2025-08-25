@@ -108,7 +108,7 @@ const PapeleraGastos = () => {
                             <div>
                                 <p className="font-semibold text-gray-700">{categoriaDelGasto?.nombre || 'Sin Categoría'}</p>
                                 <p className="text-sm text-gray-600">
-                                    {new Date(gasto.fecha + 'T00:00:00').toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })} - <span className="font-mono">${gasto.cantidad.toFixed(2)}</span>
+                                    {new Date(gasto.fecha).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })} - <span className="font-mono">${gasto.cantidad.toFixed(2)}</span>
                                 </p>
                                 {gasto.descripcion && <p className="text-xs text-gray-500 italic mt-1 max-w-xs">{gasto.descripcion}</p>}
                             </div>

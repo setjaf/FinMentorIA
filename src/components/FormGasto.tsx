@@ -2,8 +2,8 @@ import { useEffect, useState, useCallback } from "react";
 import type { CategoriaType } from "../types/CategoriaType";
 import { useGastos } from "../hooks/UseGastos";
 import { useNavigate } from "react-router-dom";
-import { localNow } from "../utils/TimeUtil";
 import { ConfirmationModal } from "./ConfirmationModal";
+import { getDateString } from "../utils/TimeUtil";
 
 interface Props {
   onClose: () => void;
@@ -14,7 +14,7 @@ interface Props {
 export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
   const [cantidad, setCantidad] = useState("");
   const [categoria, setCategoria] = useState("");
-  const [fecha, setFecha] = useState(localNow().toISOString().split("T")[0]);
+  const [fecha, setFecha] = useState(getDateString());
   const [descripcion, setDescripcion] = useState("");
   const [errores, setErrores] = useState({
     cantidad: false,
@@ -32,9 +32,10 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
       if (gastoId) {
         const gasto = await fetchGastoById(gastoId);
         if (gasto) {
+          const dateFecha = new Date(gasto.fecha);
           setCantidad(gasto.cantidad.toString());
           setCategoria(gasto.categoria);
-          setFecha(gasto.fecha);
+          setFecha(getDateString(dateFecha));
           setDescripcion(gasto.descripcion || "");
         }
       }
@@ -63,6 +64,10 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
         };
 
         try {
+
+            let fechaUTC = new Date(`${gastoData.fecha}T00:00:00`);
+            gastoData.fecha = fechaUTC.toISOString();
+
             if (gastoId) {
                 await actualizar(gastoId, gastoData);
                 navigate(`/`);
@@ -71,7 +76,7 @@ export const FormGasto = ({ onClose, categorias, gastoId }: Props) => {
             }
             setCantidad("");
             setCategoria("");
-            setFecha(localNow().toISOString().split("T")[0]);
+            setFecha(`${fechaUTC.getFullYear()}-${(fechaUTC.getMonth() + 1).toString().padStart(2, "0")}-${fechaUTC.getDate().toString().padStart(2, "0")}`);
             setDescripcion("");
             window.dispatchEvent(new Event("gastoAdded"));
             onClose();

@@ -9,6 +9,7 @@ import PeriodoSelector from './components/PeriodoSelector';
 import { useResumen } from '../../hooks/useResumen';
 import { BarChart3, List } from 'lucide-react';
 import ResumenGrafica from './components/ResumenGrafica';
+import { getDateString } from '../../utils/TimeUtil';
 
 type ResumenProps = {
   categorias: CategoriaType[];
@@ -101,8 +102,9 @@ export default function Resumen({ categorias }: ResumenProps) {
 
           {
             !loading && viewMode === 'dia' && (Object.entries(gastosAgrupados ?? {}).sort(([diaA], [diaB]) => diaB.localeCompare(diaA)).map(([dia, lista]) => {
+              const diaDate = new Date(dia);
               return (
-                <DiaDetail key={dia} dia={dia} gastos={lista} categorias={categorias} />
+                <DiaDetail key={dia} dia={getDateString(diaDate)} gastos={lista} categorias={categorias} />
               );
             }))
           }

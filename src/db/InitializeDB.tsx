@@ -6,7 +6,7 @@ interface AppDB extends DBSchema {
   gastos: {
     key: number;
     value: GastoType;
-    indexes: { 'by-fecha': string, 'by-deletedAt': string};
+    indexes: { 'by-fecha': string, 'by-deletedAt': string };
   };
   categorias: {
     key: number;
@@ -23,9 +23,9 @@ export async function getDB(): Promise<IDBPDatabase<AppDB>> {
   if (_db) return _db;
 
   _db = await openDB<AppDB>(DB_NAME, VERSION, {
-    upgrade(db, oldVersion, newVersion ,tx) {
+    async upgrade(db, oldVersion, newVersion, tx) {
       console.log(newVersion);
-      
+
       // v1: crea 'gastos'
       if (oldVersion < 1) {
         db.createObjectStore('gastos', { keyPath: 'id', autoIncrement: true });
@@ -45,8 +45,9 @@ export async function getDB(): Promise<IDBPDatabase<AppDB>> {
         const gastoStore = tx.objectStore('gastos');
         // Índice para filtrar eficientemente los gastos no borrados (deletedAt será undefined para los activos)
         gastoStore.createIndex('by-deletedAt', 'deletedAt');
+      }
     }
-  }});
+  });
 
   return _db;
 }

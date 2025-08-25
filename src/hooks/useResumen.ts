@@ -2,7 +2,9 @@ import { useReducer, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import type { GastoType } from '../types/GastoType';
 import * as GastosDB from '../db/GastosDB';
-import { localNow, getLastDayOfMonth } from '../utils/TimeUtil';
+import { getLastDayOfMonth, getDateString } from '../utils/TimeUtil';
+
+const today = new Date();
 
 // 1. Definimos la forma del estado que manejará el hook
 interface ResumenState {
@@ -26,9 +28,9 @@ type ResumenAction =
     | { type: 'FETCH_SUCCESS'; payload: { gastos: GastoType[]; aniosMeses: ResumenState['aniosMeses'], fechaInicio: string, fechaFin: string } }
     | { type: 'FETCH_ERROR'; payload: string };
 
-const mesActual = localNow().toISOString().slice(5, 7);
-const anioActual = localNow().getFullYear().toString();
-const diaActual = localNow().getDate();
+const mesActual = getDateString(today).slice(5, 7);
+const anioActual = today.getFullYear().toString();
+const diaActual = today.getDate();
 
 
 // 3. Estado inicial
@@ -108,14 +110,14 @@ export function useResumen() {
                 dispatch({ type: 'FETCH_SUCCESS', payload: { gastos: [], aniosMeses: {}, fechaInicio, fechaFin  } });
                 return;
             }
-
+            
             const [gastos, aniosMeses] = await Promise.all([
                 GastosDB.getGastosPorRango(fechaInicio, fechaFin),
                 GastosDB.getAniosMesesDisponibles(),
             ]);
-            console.log({ fechaInicio, fechaFin });
-            console.log({ gastos, aniosMeses });
 
+            aniosMeses[state.anio] ||= new Set<string>();
+            aniosMeses[state.anio].add(state.mes);
 
             dispatch({ type: 'FETCH_SUCCESS', payload: { gastos, aniosMeses, fechaInicio, fechaFin  } });
 

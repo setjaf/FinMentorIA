@@ -27,7 +27,10 @@ export const getGastoById = async (id: number | string): Promise<GastoType | und
 // Obtiene los gastos de un día específico: "2025-08-21"
 export const getGastosPorDia = async (yyyyMmDd: string): Promise<GastoType[]> => {
     const db = await getDB();
-    const range = IDBKeyRange.only(yyyyMmDd);
+    const fechaInicioLocal = new Date(`${yyyyMmDd}T00:00:00.000`);
+    const fechaFinLocal = new Date(`${yyyyMmDd}T23:59:59.999`);
+
+    const range = IDBKeyRange.bound(fechaInicioLocal.toISOString(), fechaFinLocal.toISOString());
     const gastosDelDia = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
     // Filtramos para excluir los gastos borrados lógicamente
     const gastosActivos = gastosDelDia.filter(gasto => !gasto.deletedAt);
@@ -38,7 +41,11 @@ export const getGastosPorDia = async (yyyyMmDd: string): Promise<GastoType[]> =>
 // Obtiene los gastos de un mes específico: "2025-08"
 export const getGastosPorMes = async (yyyyMm: string): Promise<GastoType[]> => {
     const db = await getDB();
-    const range = IDBKeyRange.bound(`${yyyyMm}-01`, `${yyyyMm}-31`);
+
+    const fechaInicioLocal = new Date(`${yyyyMm}-01T00:00:00.000`);
+    const fechaFinLocal = new Date(`${yyyyMm}-31T23:59:59.999`);
+
+    const range = IDBKeyRange.bound(fechaInicioLocal.toISOString(), fechaFinLocal.toISOString());
     const gastosDelMes = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
     // Filtramos para excluir los gastos borrados lógicamente
     const gastosActivos = gastosDelMes.filter(gasto => !gasto.deletedAt);
@@ -50,7 +57,10 @@ export const getGastosPorMes = async (yyyyMm: string): Promise<GastoType[]> => {
 // Obtiene los gastos de un rango específico: "2025-01-01" - "2025-01-15"
 export const getGastosPorRango = async (fechaInicio: string, fechaFin: string): Promise<GastoType[]> => {
     const db = await getDB();
-    const range = IDBKeyRange.bound(`${fechaInicio}`, `${fechaFin}`);
+    const dateFechaInicio = new Date(`${fechaInicio}T00:00:00`);
+    const dateFechaFin = new Date(`${fechaFin}T00:00:00`);
+
+    const range = IDBKeyRange.bound(dateFechaInicio.toISOString(), dateFechaFin.toISOString());
     const gastosDelMes = await db.getAllFromIndex(STORE_NAME, 'by-fecha', range);
     // Filtramos para excluir los gastos borrados lógicamente
     const gastosActivos = gastosDelMes.filter(gasto => !gasto.deletedAt);

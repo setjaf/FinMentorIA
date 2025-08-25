@@ -2,6 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react';
 import type { GastoType } from '../../../types/GastoType';
 import type { ContextMenuGastoState } from '../../../components/ContextMenuGasto';
 import ContextMenuGasto from '../../../components/ContextMenuGasto';
+import { getDateString } from '../../../utils/TimeUtil';
 
 
 
@@ -69,7 +70,7 @@ const InformacionGastoCategoria = memo(({ gasto }: { gasto: GastoType }) => {
 
       <div className='flex flex-col items-start gap-2'>
         <span className="flex align-middle">
-          {gasto.fecha.split('-').reverse().join('/')}          
+          {getDateString(new Date(gasto.fecha)).split('-').reverse().join('/')}          
         </span>
         <p className="text-xs text-gray-500 italic max-w-80">{gasto.descripcion}</p>
       </div>

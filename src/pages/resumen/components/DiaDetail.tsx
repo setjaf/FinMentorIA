@@ -23,7 +23,7 @@ const CategoriaDetail = memo(({ dia, gastos, categorias }: DiaDetailProps) => {
             className={`group bg-white rounded-lg shadow-md`}
         >
             <summary className="flex justify-between items-center p-4 pb-4 cursor-pointer list-none hover:bg-gray-50 transition-colors">
-                <span className="font-medium text-gray-600">{dia.split('-').reverse().join('/')}</span>
+                <span className="font-medium text-gray-600">{(dia.split('T')[0]).split('-').reverse().join('/')}</span>
                 <span className="text-gray-600 font-semibold flex items-center">
                     ${total.toFixed(2)}
                     <ChevronDown className="transform transition-transform duration-300 group-open:rotate-180 text-gray-600" />

@@ -2,17 +2,14 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import type { GastoType } from '../../types/GastoType';
 import type { CategoriaType } from '../../types/CategoriaType';
 import * as GastosDB from '../../db/GastosDB';
-import { localNow } from '../../utils/TimeUtil';
 import GastoIndividual from './components/GastoIndividual';
+import { getDateString } from '../../utils/TimeUtil';
 
 type GastosDelDiaProps = {
   categorias: CategoriaType[];
 };
 
-// Formatea la fecha actual a YYYY-MM-DD
-const getTodayString = () => {
-  return localNow().toISOString().slice(0, 10);
-};
+
 
 export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
   const [gastos, setGastos] = useState<GastoType[]>([]);
@@ -23,8 +20,12 @@ export default function GastosDelDia({ categorias }: GastosDelDiaProps) {
     setLoading(true);
     setError(null);
     try {
-      const fechaHoy = getTodayString();
-      const gastosDeHoy = await GastosDB.getGastosPorDia(fechaHoy);
+      
+      const gastosDeHoy = await GastosDB.getGastosPorDia(getDateString());
+
+      console.log(gastosDeHoy);
+      
+
       setGastos(gastosDeHoy);
     } catch (err: any) {
       setError(err.message || 'Error al cargar los gastos del día.');

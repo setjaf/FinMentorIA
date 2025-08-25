@@ -22,6 +22,31 @@ const tailwindColorMap: { [key: string]: string } = {
     pink: '#ec4899', rose: '#f43f5e',
 };
 
+const RADIAN = Math.PI / 180;
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+    // No renderizar etiquetas para porciones muy pequeñas para evitar desorden
+    if (percent < 0.05) {
+        return null;
+    }
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+        <text
+            x={x}
+            y={y}
+            fill="black"
+            textAnchor={x > cx ? 'start' : 'end'}
+            dominantBaseline="central"
+            fontSize="12px"
+            fontWeight="bold"
+        >
+            {`${(percent * 100).toFixed(0)}%`}
+        </text>
+    );
+};
+
 // Helper para obtener todas las fechas en un rango, incluyendo inicio y fin
 function getDatesInRange(startDateStr: string, endDateStr: string): string[] {
     const dates = [];
@@ -33,8 +58,8 @@ function getDatesInRange(startDateStr: string, endDateStr: string): string[] {
     // Empezamos con los componentes UTC de la fecha de inicio.
     let currentDate = new Date(Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()));
 
-    console.log({startDate, endDate, currentDate});
-    
+    console.log({ startDate, endDate, currentDate });
+
 
     while (currentDate <= endDate) {
         currentDate.setMinutes(currentDate.getMinutes() + currentDate.getTimezoneOffset());
@@ -45,15 +70,15 @@ function getDatesInRange(startDateStr: string, endDateStr: string): string[] {
     }
 
     console.log(dates);
-    
+
     return dates;
 }
 
 export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInicio, fechaFin }: ResumenGraficaProps) {
 
-    console.log({fechaInicio, fechaFin});
-    
-    
+    console.log({ fechaInicio, fechaFin });
+
+
     // Prepara los datos para el gráfico de pastel (por categoría)
     const pieChartData = useMemo(() => {
         const gastosPorCategoria: { [key: string]: number } = {};
@@ -63,6 +88,8 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
             gastosPorCategoria[gasto.categoria] = (gastosPorCategoria[gasto.categoria] || 0) + gasto.cantidad;
         }
 
+        const totalGastosDelPeriodo = Object.values(gastosPorCategoria).reduce((a, b) => a + b, 0);
+
         // Mapeamos a un formato que Recharts entiende, añadiendo nombre y color
         return Object.entries(gastosPorCategoria)
             .map(([categoriaId, total]) => {
@@ -70,6 +97,7 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
                 return {
                     name: categoria?.nombre || 'Sin Categoría',
                     total: total,
+                    percent: total / totalGastosDelPeriodo,
                     color: tailwindColorMap[categoria?.color || 'gray'] || '#6b7280',
                 };
             })
@@ -88,12 +116,20 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
             gastosPorDia[gasto.fecha] = (gastosPorDia[gasto.fecha] || 0) + gasto.cantidad;
         }
 
+        console.log({ gastosPorDia });
+
         // Mapeamos todas las fechas del período para asegurar que se muestren los días con 0 gastos
-        return allDates.map(date => ({
-            name: date.slice(8, 10), // Mostramos solo el número del día 'DD' en el eje
-            fullDate: date,
-            total: gastosPorDia[date] || 0,
-        }));
+        return allDates.map(date => {
+
+            const diaDate = new Date(`${date}T00:00:00.000`);
+
+
+            return {
+                name: date.slice(8, 10), // Mostramos solo el número del día 'DD' en el eje
+                fullDate: date,
+                total: gastosPorDia[diaDate.toISOString()] || 0,
+            }
+        });
     }, [gastos, fechaInicio, fechaFin]);
 
     if (gastos.length === 0) {
@@ -123,12 +159,17 @@ export default function ResumenGrafica({ gastos, categorias, viewMode, fechaInic
                                 paddingAngle={5}
                                 dataKey="total"
                                 nameKey="name"
+                                labelLine={false}
+                                label={renderCustomizedLabel}
                             >
                                 {pieChartData.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                 ))}
                             </Pie>
-                            <Tooltip formatter={(value: number) => [`$${value.toFixed(2)}`, 'Total']} />
+                            <Tooltip formatter={(value: number, name: string, entry: any) => {
+                                const percent = (entry.payload.percent * 100).toFixed(2);
+                                return [`$${value.toFixed(2)} (${percent}%)`, 'Total'];
+                            }} />
                             <Legend />
                         </PieChart>
                     </ResponsiveContainer>

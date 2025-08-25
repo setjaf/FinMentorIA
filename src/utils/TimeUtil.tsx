@@ -1,9 +1,8 @@
-export const localNow = () => {
 
-    // Get the current date and time adjusted for local timezone
-    return new Date(new Date().setMinutes(
-        new Date().getMinutes() - new Date().getTimezoneOffset()
-    ));
+
+
+export const getDateString = (dateToday : Date = new Date()) => {
+    return `${dateToday.getFullYear()}-${(dateToday.getMonth() + 1).toString().padStart(2, "0")}-${dateToday.getDate().toString().padStart(2, "0")}`;
 };
 
 export const getLastDayOfMonth = (year: number, month: number): number => {
